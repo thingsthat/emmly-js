@@ -1,0 +1,33 @@
+/logs
+/dist
+*.env
+*.env*
+node_modules/
+**/node_modules
+.cache
+.DS_Store
+/opt
+dump.rdb
+*.map
+**/dist
+**/.temp
+*.old
+
+# Crash log files
+crash.log
+
+# Ignore TypeScript
+**/tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Yarn 3
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Rollup
+.rollup.cache

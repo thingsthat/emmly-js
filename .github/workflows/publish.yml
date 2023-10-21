@@ -1,0 +1,51 @@
+name: publish
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+      contents: read
+    env:
+      CI: false
+    steps:
+
+    - name: Checkout source code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Node 18
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+
+    - name: Install packages
+      run: yarn install --immutable
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Lint
+      run: yarn run lint
+
+    - name: Build
+      run: yarn build
+
+    - name: Publish
+      run: yarn npm publish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  done:
+    timeout-minutes: 20
+    runs-on: ubuntu-22.04
+    needs: [publish]
+    env:
+      CI: false
+    steps:
+
+    # Done
+    - name: Deployed!
+      run: echo emmly-js Published
