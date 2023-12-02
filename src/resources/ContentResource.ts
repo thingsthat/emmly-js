@@ -78,8 +78,8 @@ export default class ContentResource extends Resource {
   async fetch(fields: string | string[]): Promise<EmmlyResponse> {
     if (this.variables.slug) {
       const response = await this.client.query(
-        `query content($slug: String!, $repositoryId: ID) {
-          content(slug: $slug, repositoryId: $repositoryId) {
+        `query content($slug: String!, $repositoryId: ID, $type: String) {
+          content(slug: $slug, repositoryId: $repositoryId, type: $type) {
             ${Array.isArray(fields) ? fields.join(' ') : fields}
           }
         }`,
