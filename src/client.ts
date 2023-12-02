@@ -135,19 +135,22 @@ export class EmmlyClient {
     this.options.headers[name] = value
   }
 
+  /**
+   * Build URL by appending query parameters to it.
+   *
+   * @param {string} url - Base URL of the request.
+   * @param {RequestParams} [params] - Optional key-value pairs representing the query parameters to be appended to the URL.
+   * @returns {string} Built url.
+   */
   buildUrl(url: string, params?: RequestParams): string {
-    let qs = ''
+    if (params && Object.keys(params).length > 0) {
+      // Construct URLSearchParams directly from params
+      const searchParams = new URLSearchParams(
+        Object.entries(params).map(([key, value]) => [key, String(value)]),
+      ).toString()
 
-    for (const key in params) {
-      if (params.hasOwnProperty(key)) {
-        const value = params[key]
-        qs += `${encodeURIComponent(key)}=${encodeURIComponent(value)}&`
-      }
-    }
-
-    if (qs.length > 0) {
-      qs = qs.substring(0, qs.length - 1) // chop off last "&"
-      url = `${url}?${qs}`
+      // Simplify appending query string to URL
+      return url + (url.includes('?') ? '&' : '?') + searchParams
     }
 
     return url
@@ -163,11 +166,7 @@ export class EmmlyClient {
       }),
     )
 
-    if (this.debug) {
-      console.log(agentName, 'url', '/ping')
-      console.log(agentName, 'method', 'GET')
-      console.log(agentName, 'res', response)
-    }
+    this.logDebug('GET', `${this.url}/ping`, response)
 
     return response
   }
@@ -191,11 +190,7 @@ export class EmmlyClient {
       ),
     )
 
-    if (this.debug) {
-      console.log(agentName, 'url', url)
-      console.log(agentName, 'method', 'GET')
-      console.log(agentName, 'response', response)
-    }
+    this.logDebug('GET', url, response)
 
     return response
   }
@@ -220,11 +215,7 @@ export class EmmlyClient {
       ),
     )
 
-    if (this.debug) {
-      console.log(agentName, 'url', url)
-      console.log(agentName, 'method', 'POST')
-      console.log(agentName, 'response', response)
-    }
+    this.logDebug('POST', url, response)
 
     return response
   }
@@ -252,11 +243,7 @@ export class EmmlyClient {
       ),
     )
 
-    if (this.debug) {
-      console.log(agentName, 'url', url)
-      console.log(agentName, 'method', 'PUT')
-      console.log(agentName, 'response', response)
-    }
+    this.logDebug('PUT', url, response)
 
     return response
   }
@@ -282,11 +269,7 @@ export class EmmlyClient {
       ),
     )
 
-    if (this.debug) {
-      console.log(agentName, 'url', url)
-      console.log(agentName, 'method', 'DELETE')
-      console.log(agentName, 'response', response)
-    }
+    this.logDebug('DELETE', url, response)
 
     return response
   }
@@ -317,11 +300,7 @@ export class EmmlyClient {
     // Tidy up a little
     response.data = response.data.data
 
-    if (this.debug) {
-      console.log(agentName, 'url', url)
-      console.log(agentName, 'method', 'POST')
-      console.log(agentName, 'response', response)
-    }
+    this.logDebug('POST', url, response)
 
     return response
   }
@@ -380,6 +359,14 @@ export class EmmlyClient {
       }
 
       throw err
+    }
+  }
+
+  logDebug(method: string, url: string, response: EmmlyResponse) {
+    if (this.debug) {
+      console.log(agentName, 'method', method)
+      console.log(agentName, 'url', url)
+      console.log(agentName, 'response', response)
     }
   }
 }
