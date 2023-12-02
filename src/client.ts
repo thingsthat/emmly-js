@@ -95,11 +95,11 @@ export class EmmlyClient {
 
     // Set environment if we have environment variables
     if (typeof process === 'object') {
-      if (process.env.UNALIKE_API_URL) {
-        this.setApi(process.env.UNALIKE_API_URL)
+      if (process.env.EMMLY_API_URL) {
+        this.setApi(process.env.EMMLY_API_URL)
       }
-      if (process.env.UNALIKE_API_TOKEN) {
-        this.setToken(process.env.UNALIKE_API_TOKEN)
+      if (process.env.EMMLY_API_TOKEN) {
+        this.setToken(process.env.EMMLY_API_TOKEN)
       }
     }
   }
@@ -156,7 +156,11 @@ export class EmmlyClient {
     return url
   }
 
-  requiresToken() {}
+  private requiresToken() {
+    if (!this.token || this.token.trim() === '') {
+      throw new Error('A valid API token is required for this operation.')
+    }
+  }
 
   async ping(): Promise<EmmlyResponse> {
     const response = await this.request(
