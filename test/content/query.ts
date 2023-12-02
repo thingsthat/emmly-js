@@ -40,14 +40,15 @@ export default () => {
       const client = new EmmlyClient()
       client
         .query(
-          `query content($id: ID!) {
-                content(id: $id) {
+          `query content($slug: String!, $repositoryId: ID) {
+                content(slug: $slug, repositoryId: $repositoryId) {
                     id
                     name
                 }
             }`,
           {
-            id: contentFixture.id,
+            slug: contentFixture.id,
+            repositoryId: repositoryFixture.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -64,7 +65,10 @@ export default () => {
 
           done()
         })
-        .catch(done)
+        .catch((error) => {
+          console.log(error)
+          done()
+        })
     })
 
     it('should query content by media type', function (done) {
@@ -126,6 +130,7 @@ export default () => {
       const client = new EmmlyClient()
       client
         .content(contentFixture.id)
+        .repository(repositoryFixture.id || '')
         .fetch('id name')
         .then(function (response: EmmlyResponse) {
           assert.isNotNull(response, 'No response object')

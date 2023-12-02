@@ -10,54 +10,25 @@ export default class ModelResource extends Resource {
     super(client)
   }
 
-  repository(repository: string): ModelResource {
-    this.variables.repository = repository
+  model(slug: string): ModelResource {
+    this.variables.slug = slug
     return this
   }
 
-  sortBy(sortBy: string): ModelResource {
-    this.variables.sortBy = sortBy
-    return this
-  }
-
-  sortUp(): ModelResource {
-    this.variables.sortDirection = 'ASC'
-    return this
-  }
-
-  sortDown(): ModelResource {
-    this.variables.sortDirection = 'DESC'
-    return this
-  }
-
-  pageSize(pageSize: number): ModelResource {
-    this.variables.pageSize = pageSize
-    return this
-  }
-
-  page(page: number): ModelResource {
-    this.variables.page = page
-    return this
-  }
-
-  status(status: string): ModelResource {
-    this.variables.status = status
+  repository(repositoryId: string): ModelResource {
+    this.variables.repositoryId = repositoryId
     return this
   }
 
   async fetch(fields: string | string[]): Promise<EmmlyResponse> {
-    if (this.variables.id) {
-      const variables = {
-        id: this.variables.id,
-      }
-
+    if (this.variables.slug) {
       const response = await this.client.query(
-        `query model($id: ID!) {
-                model(id: $id) {
-                    ${Array.isArray(fields) ? fields.join(' ') : fields}
-                }
-            }`,
-        variables,
+        `query model($slug: String!, $respositoryId: ID) {
+          model(slug: $slug, respositoryId: $respositoryId) {
+            ${Array.isArray(fields) ? fields.join(' ') : fields}
+          }
+        }`,
+        this.variables,
       )
 
       return {
@@ -66,17 +37,13 @@ export default class ModelResource extends Resource {
       }
     }
 
-    const variables = {
-      repositoryId: this.variables.repository,
-    }
-
     const response = await this.client.query(
       `query models($repositoryId: ID) {
-            models(repositoryId: $repositoryId) {
-                ${Array.isArray(fields) ? fields.join(' ') : fields}
-            }
-        }`,
-      variables,
+        models(repositoryId: $repositoryId) {
+          ${Array.isArray(fields) ? fields.join(' ') : fields}
+        }
+      }`,
+      this.variables,
     )
 
     return {
@@ -86,22 +53,18 @@ export default class ModelResource extends Resource {
   }
 
   async delete(): Promise<EmmlyResponse> {
-    if (!this.variables.id) {
+    if (!this.variables.slug) {
       throw new Error('Model ID needs to be supplied before you can delete.')
     }
 
-    const variables = {
-      modelId: this.variables.id,
-    }
-
     const response = await this.client.query(
-      `mutation deleteModel($modelId: ID!) {
-            deleteModel(modelId: $modelId) {
-                id
-                name
-            }
-        }`,
-      variables,
+      `mutation deleteModel($slug: String!, $repositoryId: ID) {
+        deleteModel(slug: $slug, repositoryId: $repositoryId) {
+          id
+          name
+        }
+      }`,
+      this.variables,
     )
 
     return {

@@ -1,8 +1,6 @@
 # Emmly JavaScript SDK
 
-Emmly is a publishing platform designed for content creators and publishers, allowing them to build publications and communities. It's a headless publication management solution that allows teams to integrate with the modern software stacks, offering a central hub for structured publication, content, management, and delivery.
-
-This JavaScript SDK is for the Emmly API, so you can easily access publications and content stored in Emmly with your JavaScript applications.
+This JavaScript SDK is for the Emmly API, so you can easily access content stored in Emmly with your JavaScript applications.
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/thingsthat/emmly-js) [![GitHub license](https://img.shields.io/github/license/thingsthat/emmly-js)](https://github.com/thingsthat/emmly-js/blob/master/LICENSE) ![Release workflow](https://github.com/thingsthat/emmly-js/actions/workflows/main.yml/badge.svg) ![GitHub issues](https://img.shields.io/github/issues/thingsthat/emmly-js)
 

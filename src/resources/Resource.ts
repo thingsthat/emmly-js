@@ -8,11 +8,11 @@ export default class Resource {
 
   variables: {
     sortBy?: string
-    id?: string
+    slug?: string
     sortDirection?: 'ASC' | 'DESC'
-    repository?: string
+    repositoryId?: string
     type?: string
-    person?: string
+    personId?: string
     pageSize?: number
     page?: number
     status?: string | string[]
@@ -26,8 +26,8 @@ export default class Resource {
     this.variables = {}
   }
 
-  id(id: string) {
-    this.variables.id = id
+  slug(slug: string) {
+    this.variables.slug = slug
     return this
   }
 }

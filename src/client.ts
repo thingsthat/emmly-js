@@ -46,9 +46,9 @@ export class EmmlyClient {
     },
   }
 
-  content: (id?: string) => ContentResource
-  repository: (id?: string) => RepositoryResource
-  model: (id?: string) => ModelResource
+  content: (slug?: string) => ContentResource
+  repository: (slug?: string) => RepositoryResource
+  model: (slug?: string) => ModelResource
 
   interceptors: {
     request: Interceptors
@@ -62,26 +62,26 @@ export class EmmlyClient {
 
   constructor() {
     // Resources
-    this.content = (id?: string) => {
+    this.content = (slug?: string) => {
       const resource = new ContentResource(this)
-      if (id) {
-        resource.id(id)
+      if (slug) {
+        resource.slug(slug)
       }
       return resource
     }
 
-    this.repository = (id?: string) => {
+    this.repository = (slug?: string) => {
       const resource = new RepositoryResource(this)
-      if (id) {
-        resource.id(id)
+      if (slug) {
+        resource.slug(slug)
       }
       return resource
     }
 
-    this.model = (id?: string) => {
+    this.model = (slug?: string) => {
       const resource = new ModelResource(this)
-      if (id) {
-        resource.id(id)
+      if (slug) {
+        resource.slug(slug)
       }
       return resource
     }

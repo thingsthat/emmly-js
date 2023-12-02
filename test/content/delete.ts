@@ -1,7 +1,12 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { fixture, contentFixture, contentFixture2 } from '../fixtures'
+import {
+  fixture,
+  contentFixture,
+  contentFixture2,
+  repositoryFixture,
+} from '../fixtures'
 
 export default () => {
   describe('Emmly delete content', function () {
@@ -9,6 +14,7 @@ export default () => {
       const client = new EmmlyClient()
       client
         .content(contentFixture.id)
+        .repository(repositoryFixture.id || '')
         .delete()
         .then(function (response: EmmlyResponse) {
           assert.isNotNull(response, 'No response object')
@@ -26,6 +32,7 @@ export default () => {
       const client = new EmmlyClient()
       client
         .content(fixture.imageContentId || '')
+        .repository(repositoryFixture.id || '')
         .delete()
         .then(() => client.content(contentFixture2.id).delete())
         .then(function () {

@@ -10,8 +10,8 @@ export default class RepositoryResource extends Resource {
     super(client)
   }
 
-  repository(repository: string): RepositoryResource {
-    this.variables.repository = repository
+  repository(slug: string): RepositoryResource {
+    this.variables.slug = slug
     return this
   }
 
@@ -37,16 +37,14 @@ export default class RepositoryResource extends Resource {
    * @returns {EmmlyResponse} - Response from Emmly.
    */
   async fetch(fields: string | string[]): Promise<EmmlyResponse> {
-    if (this.variables.id) {
+    if (this.variables.slug) {
       const response = await this.client.query(
         `query repository($slug: String) {
-                repository(slug: $slug) {
-                    ${Array.isArray(fields) ? fields.join(' ') : fields}
-                }
-            }`,
-        {
-          slug: this.variables.id,
-        },
+          repository(slug: $slug) {
+            ${Array.isArray(fields) ? fields.join(' ') : fields}
+          }
+        }`,
+        this.variables,
       )
 
       return {
@@ -55,18 +53,13 @@ export default class RepositoryResource extends Resource {
       }
     }
 
-    const variables = {
-      sortBy: this.variables.sortBy,
-      sortDirection: this.variables.sortDirection,
-    }
-
     const response = await this.client.query(
       `query repositories($sortBy: String, $sortDirection: SortDirection) { 
             repositories(sortBy: $sortBy, sortDirection: $sortDirection) { 
                 ${fields}
             }
         }`,
-      variables,
+      this.variables,
     )
 
     return {

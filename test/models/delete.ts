@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { modelFixture } from '../fixtures'
+import { modelFixture, repositoryFixture } from '../fixtures'
 
 export default () => {
   describe('Emmly delete model', function () {
@@ -9,6 +9,7 @@ export default () => {
       const client = new EmmlyClient()
       client
         .model(modelFixture.id)
+        .repository(repositoryFixture.id || '')
         .delete()
         .then(function (response: EmmlyResponse) {
           assert.isNotNull(response, 'No response object')

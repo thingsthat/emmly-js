@@ -17,7 +17,7 @@ export default () => {
           assert.notExists(response.errors, 'Has errors')
 
           assert.exists(response.data, 'No models data')
-          assert.strictEqual(response.data.length, 3, 'Model length not 3')
+          assert.strictEqual(response.data.length, 4, 'Model length not 4')
 
           done()
         })

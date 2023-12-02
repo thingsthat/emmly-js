@@ -1,3 +1,5 @@
+import dotenv from 'dotenv'
+
 import actionsCreate from './actions/create'
 import actionsDelete from './actions/delete'
 import actionsExecute from './actions/execute'
@@ -18,6 +20,8 @@ import respositoriesOptions from './respositories/options'
 import respositoriesUpdate from './respositories/update'
 import workflowCreate from './workflow/create'
 import workflowDelete from './workflow/delete'
+
+dotenv.config()
 
 general()
 

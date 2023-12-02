@@ -1,6 +1,5 @@
 export type Delta = {
   ops: DeltaOp[]
-  penelope?: any[]
   schema?: string
 }
 

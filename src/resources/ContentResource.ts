@@ -10,13 +10,18 @@ export default class ContentResource extends Resource {
     super(client)
   }
 
-  repository(repository: string): ContentResource {
-    this.variables.repository = repository
+  content(slug: string): ContentResource {
+    this.variables.slug = slug
     return this
   }
 
-  person(person: string): ContentResource {
-    this.variables.person = person
+  repository(repositoryId: string): ContentResource {
+    this.variables.repositoryId = repositoryId
+    return this
+  }
+
+  person(personId: string): ContentResource {
+    this.variables.personId = personId
     return this
   }
 
@@ -71,18 +76,14 @@ export default class ContentResource extends Resource {
   }
 
   async fetch(fields: string | string[]): Promise<EmmlyResponse> {
-    if (this.variables.id) {
-      const variables = {
-        id: this.variables.id,
-      }
-
+    if (this.variables.slug) {
       const response = await this.client.query(
-        `query content($id: ID!) {
-                content(id: $id) {
-                   ${Array.isArray(fields) ? fields.join(' ') : fields}
-                }
-            }`,
-        variables,
+        `query content($slug: String!, $repositoryId: ID) {
+          content(slug: $slug, repositoryId: $repositoryId) {
+            ${Array.isArray(fields) ? fields.join(' ') : fields}
+          }
+        }`,
+        this.variables,
       )
 
       return {
@@ -91,26 +92,13 @@ export default class ContentResource extends Resource {
       }
     }
 
-    const variables = {
-      repositoryId: this.variables.repository,
-      personId: this.variables.person,
-      sortBy: this.variables.sortBy,
-      sortDirection: this.variables.sortDirection,
-      pageSize: this.variables.pageSize,
-      page: this.variables.page,
-      type: this.variables.type,
-      status: this.variables.status,
-      published: this.variables.published,
-      tags: this.variables.tags,
-    }
-
     const response = await this.client.query(
       `query contents($repositoryId: ID, $personId: ID, $sortBy: String, $sortDirection: SortDirection, $pageSize: Int, $page: Int, $type: [String], $status: [String], $published: Boolean, $tags: [String]){
-            contents(repositoryId: $repositoryId, personId: $personId, sortBy: $sortBy, sortDirection: $sortDirection, pageSize: $pageSize, page: $page, type: $type, status: $status, published: $published, tags: $tags) {
-                ${fields}
-            }
-        }`,
-      variables,
+        contents(repositoryId: $repositoryId, personId: $personId, sortBy: $sortBy, sortDirection: $sortDirection, pageSize: $pageSize, page: $page, type: $type, status: $status, published: $published, tags: $tags) {
+          ${fields}
+        }
+      }`,
+      this.variables,
     )
 
     return {
@@ -120,22 +108,20 @@ export default class ContentResource extends Resource {
   }
 
   async delete(): Promise<EmmlyResponse> {
-    if (!this.variables.id) {
-      throw new Error('Content ID needs to be supplied before you can delete.')
-    }
-
-    const variables = {
-      contentId: this.variables.id,
+    if (!this.variables.slug) {
+      throw new Error(
+        'Content slug needs to be supplied before you can delete.',
+      )
     }
 
     const response = await this.client.query(
-      `mutation deleteContent($contentId: ID!) {
-            deleteContent(contentId: $contentId) {
-                id
-                name
-            }
-        }`,
-      variables,
+      `mutation deleteContent($slug: String!, $repositoryId: ID) {
+        deleteContent(slug: $slug, repositoryId: $repositoryId) {
+          id
+          name
+        }
+      }`,
+      this.variables,
     )
 
     return {
