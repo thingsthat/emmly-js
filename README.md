@@ -30,7 +30,30 @@ yarn add @thingsthat/emmly-js --save
 https://unpkg.com/@thingsthat/emmly-js
 ```
 
-### Testing
+## Configuration
+
+To get started with the Emmly JavaScript SDK, you first need to configure it with your API credentials and any other necessary settings. Here's a step-by-step guide on how to do this:
+
+### Setting API Credentials
+
+You will need your Emmly API token to authenticate requests. The default is automatically retrieved from the EMMLY_API_TOKEN environment variable if set. Here's how to set it manually:
+
+```javascript
+import { EmmlyClient } from '@thingsthat/emmly-js';
+
+const client = new EmmlyClient()
+client.setToken(EMMLY_API_TOKEN)
+```
+
+### Configuring Timeout
+
+You can also configure other options like request timeout, which defines how long the SDK should wait for a response before timing out:
+
+```javascript
+client.setTimeout(10000); // Default timeout in milliseconds
+```
+
+## Testing
 
 API tests use Mocha. Use the following command:
 
@@ -40,8 +63,8 @@ yarn test
 
 For these tests, you will need the following environment variables:
 
-* UNALIKE_API_TOKEN - The API token for accessing the Emmly API.
-* UNALIKE_API_URL - The URL of the API. This is necessary if you are running tests in a local environment or in an environment other than production.
+* EMMLY_API_TOKEN - The API token for accessing the Emmly API.
+* EMMLY_API_URL - The URL of the API. This is necessary if you are running tests in a local environment or in an environment other than production.
 
 You can also add these variables to a .env file in your project root for convenience.
 
