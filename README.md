@@ -30,6 +30,21 @@ yarn add @thingsthat/emmly-js --save
 https://unpkg.com/@thingsthat/emmly-js
 ```
 
+### Testing
+
+API tests use Mocha. Use the following command:
+
+```sh
+yarn test
+```
+
+For these tests, you will need the following environment variables:
+
+* UNALIKE_API_TOKEN - The API token for accessing the Emmly API.
+* UNALIKE_API_URL - The URL of the API. This is necessary if you are running tests in a local environment or in an environment other than production.
+
+You can also add these variables to a .env file in your project root for convenience.
+
 ## License
 
 This software is licensed under the MIT License, quoted below.
