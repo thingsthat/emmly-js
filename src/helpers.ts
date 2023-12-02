@@ -1,16 +1,13 @@
 /**
  * Returns the number of minutes it will take to read a block of text.
  *
- * @param {string} words - The words to count.
+ * @param {string} text - The text to count.
+ * @returns {number} The number of minutes.
  */
-export const calcReadingTime = (words: string) => {
+export const calcReadingTime = (text: string): number => {
   const wordsPerMinute = 200 // Average case.
-  let result = 1
+  text = text.trim().replace(/\s+/g, ' ') // Trims and replaces multiple spaces with a single space
 
-  const textLength = words.split(' ').length // Split by words
-  if (textLength > 0) {
-    result = Math.ceil(textLength / wordsPerMinute)
-  }
-
-  return result
+  const wordCount = text.split(' ').filter((word) => word).length // Splits by spaces and filters out empty strings
+  return wordCount > 0 ? Math.ceil(wordCount / wordsPerMinute) : 1
 }
