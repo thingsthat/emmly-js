@@ -9,7 +9,7 @@ type InterceptRequest = {
 }
 
 /**
- * Interceptors, so we intercept the requests and responses globally.
+ * Interceptors for the requests and responses globally.
  */
 export class Interceptors {
   handlers: { (request: InterceptRequest): void }[]

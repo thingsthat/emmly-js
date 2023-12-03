@@ -124,6 +124,11 @@ export class EmmlyClient {
     return packageAgentName
   }
 
+  /**
+   * Set the API token to be sent with every request.
+   *
+   * @param {string} token - The API token.
+   */
   setToken(token: string) {
     if (token !== undefined && token !== null) {
       this.token = token
@@ -131,6 +136,11 @@ export class EmmlyClient {
     }
   }
 
+  /**
+   * Set a header to be sent with every request.
+   * @param {string} name - The key name of the header.
+   * @param {string} value - The value of the header.
+   */
   setHeader(name: string, value: string) {
     this.options.headers[name] = value
   }
@@ -156,12 +166,20 @@ export class EmmlyClient {
     return url
   }
 
+  /**
+   * Check if a valid API token is set.
+   */
   private requiresToken() {
     if (!this.token || this.token.trim() === '') {
       throw new Error('A valid API token is required for this operation.')
     }
   }
 
+  /**
+   * Ping the Emmly API to check if it is up and running.
+   *
+   * @returns {Promise<EmmlyResponse>} A Promise that resolves to an EmmlyResponse object.
+   */
   async ping(): Promise<EmmlyResponse> {
     const response = await this.request(
       `${this.url}/ping`,
@@ -366,6 +384,12 @@ export class EmmlyClient {
     }
   }
 
+  /**
+   * Log debug information including the method, URL, and response if the debug flag is enabled.
+   * @param {string} method - The method parameter.
+   * @param {string} url - The URL of the request being made.
+   * @param {EmmlyResponse} response - The EmmlyResponse response.
+   */
   logDebug(method: string, url: string, response: EmmlyResponse) {
     if (this.debug) {
       console.log(agentName, 'method', method)

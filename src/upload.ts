@@ -32,6 +32,8 @@ export type UploadEventPayload = {
   total?: number
   maxOffset?: number
   offset?: number
+  chunks?: { [key: string]: Chunk }
+  error?: Error
 }
 
 type Chunk = {
@@ -46,12 +48,14 @@ type Chunk = {
   cancelSource?: CancelTokenSource
 }
 
+type UploadEventHandler = (payload?: UploadEventPayload) => void
+
 /**
  * Uploader for the Emmly API.
  */
 export class EmmlyUploader {
   files: { [key: string]: UploadFile }
-  events: { [key: string]: Function[] }
+  events: { [key in UploadEvent]?: UploadEventHandler[] } = {}
   client: EmmlyClient
 
   // Bytes per chunk
@@ -272,26 +276,21 @@ export class EmmlyUploader {
    * @param {UploadEvent} event - The event to add a handler for.
    * @param {Function} handler - The callback handler for the event.
    */
-  on(event: UploadEvent, handler: Function) {
-    if (!(event in this.events)) {
+  on(event: UploadEvent, handler: UploadEventHandler) {
+    if (!this.events[event]) {
       this.events[event] = []
     }
-
-    this.events[event].push(handler)
+    this.events[event]!.push(handler)
   }
 
   /**
    * Emits an event.
    *
    * @param {UploadEvent} event - The event to emit.
-   * @param {any} data - The data to emit with the event.
+   * @param {UploadEventPayload} data - The data to emit with the event.
    */
-  emit(event: UploadEvent, data?: any) {
-    if (event in this.events) {
-      for (const handler of this.events[event]) {
-        handler(data)
-      }
-    }
+  emit(event: UploadEvent, data?: UploadEventPayload) {
+    this.events[event]?.forEach((handler) => handler(data))
   }
 
   /**
@@ -415,11 +414,11 @@ export class UploadFile {
 
     this.uploader.emit('uploading', { referenceId })
 
-    try {
-      this.queue = new Bottleneck({
-        maxConcurrent: 3,
-      })
+    this.queue = new Bottleneck({
+      maxConcurrent: 3,
+    })
 
+    try {
       // Reset chunks loaded if not complete
       for (const chunkKey in this.chunks) {
         if (!this.chunks[chunkKey].isComplete) {
