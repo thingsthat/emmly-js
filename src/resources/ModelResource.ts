@@ -16,8 +16,8 @@ export default class ModelResource extends Resource {
     }
 
     const response = await this.client.query(
-      `mutation deleteModel($slug: String!, $repositoryId: ID) {
-        deleteModel(slug: $slug, repositoryId: $repositoryId) {
+      `mutation deleteModel($slug: String!, $repositorySlug: String) {
+        deleteModel(slug: $slug, repositorySlug: $repositorySlug) {
           id
           name
         }
@@ -34,8 +34,8 @@ export default class ModelResource extends Resource {
   async fetch(fields: string | string[]): Promise<EmmlyResponse> {
     if (this.variables.slug) {
       const response = await this.client.query(
-        `query model($slug: String!, $respositoryId: ID) {
-          model(slug: $slug, respositoryId: $respositoryId) {
+        `query model($slug: String!, $repositorySlug: String) {
+          model(slug: $slug, repositorySlug: $repositorySlug) {
             ${Array.isArray(fields) ? fields.join(' ') : fields}
           }
         }`,
@@ -49,8 +49,8 @@ export default class ModelResource extends Resource {
     }
 
     const response = await this.client.query(
-      `query models($repositoryId: ID) {
-        models(repositoryId: $repositoryId) {
+      `query models($repositorySlug: String) {
+        models(repositorySlug: $repositorySlug) {
           ${Array.isArray(fields) ? fields.join(' ') : fields}
         }
       }`,
@@ -68,8 +68,8 @@ export default class ModelResource extends Resource {
     return this
   }
 
-  repository(repositoryId: string): ModelResource {
-    this.variables.repositoryId = repositoryId
+  repository(repositorySlug: string): ModelResource {
+    this.variables.repositorySlug = repositorySlug
     return this
   }
 }

@@ -10,7 +10,7 @@ class MockEmmlyClient {}
 describe('EmmlyUploader', () => {
   let uploader: EmmlyUploader
   let fileBuffer: Buffer
-  const repositoryId = 'repo123'
+  const repositorySlug = 'repo123'
   const contentType = 'image/jpeg'
   const actions = ['action1', 'action2']
 
@@ -27,7 +27,7 @@ describe('EmmlyUploader', () => {
       'image.jpg',
       fileBuffer,
       contentType,
-      repositoryId,
+      repositorySlug,
       actions,
     )
 
@@ -56,7 +56,7 @@ describe('EmmlyUploader', () => {
       'image.jpg',
       fileBuffer,
       contentType,
-      repositoryId,
+      repositorySlug,
       actions,
     )
     const errorHandler = jest.fn()
@@ -75,7 +75,7 @@ describe('EmmlyUploader', () => {
       'image.jpg',
       fileBuffer,
       contentType,
-      repositoryId,
+      repositorySlug,
       actions,
     )
     const file = uploader.files['file1']

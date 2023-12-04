@@ -9,14 +9,14 @@ export default () => {
       const client = new EmmlyClient()
       client
         .query(
-          `query contents($repositoryId: ID!) {
-                contents(repositoryId: $repositoryId) {
+          `query contents($repositorySlug: String!) {
+                contents(repositorySlug: $repositorySlug) {
                     id
                     name
                 }
             }`,
           {
-            repositoryId: repositoryFixture.id,
+            repositorySlug: repositoryFixture.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -40,14 +40,14 @@ export default () => {
       const client = new EmmlyClient()
       client
         .query(
-          `query content($slug: String!, $repositoryId: ID) {
-                content(slug: $slug, repositoryId: $repositoryId) {
+          `query content($slug: String!, $repositorySlug: String) {
+                content(slug: $slug, repositorySlug: $repositorySlug) {
                     id
                     name
                 }
             }`,
           {
-            repositoryId: repositoryFixture.id,
+            repositorySlug: repositoryFixture.id,
             slug: contentFixture.id,
           },
         )
@@ -75,15 +75,15 @@ export default () => {
       const client = new EmmlyClient()
       client
         .query(
-          `query contents($repositoryId: ID!, $type: [String]) {
-                contents(repositoryId: $repositoryId, type: $type) {
+          `query contents($repositorySlug: String!, $type: [String]) {
+                contents(repositorySlug: $repositorySlug, type: $type) {
                     id
                     name
                 }
             }`,
           {
             type: 'media',
-            repositoryId: repositoryFixture.id,
+            repositorySlug: repositoryFixture.id,
           },
         )
         .then(function (response: EmmlyResponse) {

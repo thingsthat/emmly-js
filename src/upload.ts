@@ -74,7 +74,7 @@ export class EmmlyUploader {
    * @param {*} name - The name of the file.
    * @param {*} buffer - The buffer of the file.
    * @param {*} contentType - The content type of the file.
-   * @param {*} repositoryId - The repository ID to upload to.
+   * @param {*} repositorySlug - The repository Slug to upload to.
    * @param {*} actions  - The actions to apply to the file.
    * @param {*} parentContentId - The optional parent content ID to upload to.
    */
@@ -83,7 +83,7 @@ export class EmmlyUploader {
     name: string,
     buffer: Buffer,
     contentType: string,
-    repositoryId: string,
+    repositorySlug: string,
     actions: string[],
     parentContentId?: string,
   ) {
@@ -94,7 +94,7 @@ export class EmmlyUploader {
       name,
       buffer,
       size,
-      repositoryId,
+      repositorySlug,
       contentType,
       actions,
       parentContentId,
@@ -338,7 +338,7 @@ export class UploadFile {
   parentContentId?: string
   queue?: Bottleneck
   referenceId: string
-  repositoryId: string
+  repositorySlug: string
   size: number
   target: any
   uploader: EmmlyUploader
@@ -349,7 +349,7 @@ export class UploadFile {
     name: string,
     buffer: Buffer,
     size: number,
-    repositoryId: string,
+    repositorySlug: string,
     contentType: string,
     actions: any,
     parentContentId?: string,
@@ -359,7 +359,7 @@ export class UploadFile {
     this.name = name
     this.buffer = buffer
     this.size = size
-    this.repositoryId = repositoryId
+    this.repositorySlug = repositorySlug
     this.parentContentId = parentContentId
     this.contentType = contentType
     this.actions = actions
@@ -411,8 +411,8 @@ export class UploadFile {
 
     try {
       const { data } = await this.uploader.client.query(
-        `query uploadCallback($key: String, $contentType: String!, $name: String!, $repositoryId: ID!, $actions: [String], $chunks: JSON, $parentContentId: ID) { 
-                uploadCallback(key: $key, contentType: $contentType, name: $name, repositoryId: $repositoryId, actions: $actions, chunks: $chunks, parentContentId: $parentContentId) {
+        `query uploadCallback($key: String, $contentType: String!, $name: String!, $repositorySlug: String!, $actions: [String], $chunks: JSON, $parentContentId: ID) { 
+                uploadCallback(key: $key, contentType: $contentType, name: $name, repositorySlug: $repositorySlug, actions: $actions, chunks: $chunks, parentContentId: $parentContentId) {
                             id
                             name
                             data
@@ -425,7 +425,7 @@ export class UploadFile {
           contentType: this.contentType,
           key: this.target.key,
           parentContentId: this.parentContentId,
-          repositoryId: this.repositoryId,
+          repositorySlug: this.repositorySlug,
         },
       )
 
@@ -491,8 +491,8 @@ export class UploadFile {
 
     try {
       const response = await this.uploader.client.query(
-        `query upload($repositoryId: ID!, $contentType: String!, $chunks: JSON) { 
-                    upload(repositoryId: $repositoryId, contentType: $contentType, chunks: $chunks) {
+        `query upload($repositorySlug: String!, $contentType: String!, $chunks: JSON) { 
+                    upload(repositorySlug: $repositorySlug, contentType: $contentType, chunks: $chunks) {
                             url
                             key
                             chunks
@@ -501,7 +501,7 @@ export class UploadFile {
         {
           chunks: this.chunks,
           contentType: this.contentType,
-          repositoryId: this.repositoryId,
+          repositorySlug: this.repositorySlug,
         },
       )
 

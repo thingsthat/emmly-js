@@ -9,14 +9,14 @@ export default () => {
       const client = new EmmlyClient()
       client
         .query(
-          `query revisions($repositoryId: ID!) {
-                revisions(repositoryId: $repositoryId) {
+          `query revisions($repositorySlug: String!) {
+                revisions(repositorySlug: $repositorySlug) {
                     id
                     contentId
                 }
             }`,
           {
-            repositoryId: repositoryFixture.id,
+            repositorySlug: repositoryFixture.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -40,15 +40,15 @@ export default () => {
       const client = new EmmlyClient()
       client
         .query(
-          `query revisions($repositoryId: ID!, $contentId: ID) {
-                revisions(repositoryId: $repositoryId, contentId: $contentId) {
+          `query revisions($repositorySlug: String!, $contentId: ID) {
+                revisions(repositorySlug: $repositorySlug, contentId: $contentId) {
                     id
                     contentId
                 }
             }`,
           {
             contentId: contentFixture.id,
-            repositoryId: repositoryFixture.id,
+            repositorySlug: repositoryFixture.id,
           },
         )
         .then(function (response: EmmlyResponse) {

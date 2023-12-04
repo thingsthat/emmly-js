@@ -12,7 +12,7 @@ export default class Resource {
     pageSize?: number
     personId?: string
     published?: boolean
-    repositoryId?: string
+    repositorySlug?: string
     slug?: string
     sortBy?: string
     sortDirection?: 'ASC' | 'DESC'

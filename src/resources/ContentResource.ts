@@ -1,4 +1,5 @@
 import { EmmlyClient, EmmlyResponse } from '..'
+import { IContent } from '../types/content'
 
 import Resource from './Resource'
 
@@ -23,8 +24,8 @@ export default class ContentResource extends Resource {
     }
 
     const response = await this.client.query(
-      `mutation deleteContent($slug: String!, $repositoryId: ID) {
-        deleteContent(slug: $slug, repositoryId: $repositoryId) {
+      `mutation deleteContent($slug: String!, $repositorySlug: String) {
+        deleteContent(slug: $slug, repositorySlug: $repositorySlug) {
           id
           name
         }
@@ -41,8 +42,8 @@ export default class ContentResource extends Resource {
   async fetch(fields: string | string[]): Promise<EmmlyResponse> {
     if (this.variables.slug) {
       const response = await this.client.query(
-        `query content($slug: String!, $repositoryId: ID, $type: String) {
-          content(slug: $slug, repositoryId: $repositoryId, type: $type) {
+        `query content($slug: String!, $repositorySlug: String, $type: String) {
+          content(slug: $slug, repositorySlug: $repositorySlug, type: $type) {
             ${Array.isArray(fields) ? fields.join(' ') : fields}
           }
         }`,
@@ -56,8 +57,8 @@ export default class ContentResource extends Resource {
     }
 
     const response = await this.client.query(
-      `query contents($repositoryId: ID, $personId: ID, $sortBy: String, $sortDirection: SortDirection, $pageSize: Int, $page: Int, $type: [String], $status: [String], $published: Boolean, $tags: [String]){
-        contents(repositoryId: $repositoryId, personId: $personId, sortBy: $sortBy, sortDirection: $sortDirection, pageSize: $pageSize, page: $page, type: $type, status: $status, published: $published, tags: $tags) {
+      `query contents($repositorySlug: String, $personId: ID, $sortBy: String, $sortDirection: SortDirection, $pageSize: Int, $page: Int, $type: [String], $status: [String], $published: Boolean, $tags: [String]){
+        contents(repositorySlug: $repositorySlug, personId: $personId, sortBy: $sortBy, sortDirection: $sortDirection, pageSize: $pageSize, page: $page, type: $type, status: $status, published: $published, tags: $tags) {
           ${Array.isArray(fields) ? fields.join(' ') : fields}
         }
       }`,
@@ -90,8 +91,30 @@ export default class ContentResource extends Resource {
     return this
   }
 
-  repository(repositoryId: string): ContentResource {
-    this.variables.repositoryId = repositoryId
+  async push(
+    content: IContent,
+    fields: string | string[],
+  ): Promise<EmmlyResponse> {
+    const response = await this.client.query(
+      `mutation content($repositorySlug: String, $content: JSON!) { 
+        content(repositorySlug: $repositorySlug, content: $content) {
+          ${Array.isArray(fields) ? fields.join(' ') : fields}
+        }
+      }`,
+      {
+        content,
+        repositorySlug: this.variables.repositorySlug,
+      },
+    )
+
+    return {
+      data: response.data.content,
+      headers: response.headers,
+    }
+  }
+
+  repository(repositorySlug: string): ContentResource {
+    this.variables.repositorySlug = repositorySlug
     return this
   }
 

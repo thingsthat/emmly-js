@@ -10,15 +10,15 @@ export default () => {
       client.setTimeout(20000) // Increase timeout for local lambda testing
       client
         .query(
-          `query execute($action: String, $repositoryId: ID!, $contentId: ID) { 
-                execute(action: $action, repositoryId: $repositoryId, contentId: $contentId) {
+          `query execute($action: String, $repositorySlug: String!, $contentId: ID) { 
+                execute(action: $action, repositorySlug: $repositorySlug, contentId: $contentId) {
                     result
                 }
             }`,
           {
             action: actionFixture.id,
             contentId: fixture.imageContentId,
-            repositoryId: repositoryFixture.id,
+            repositorySlug: repositoryFixture.id,
           },
         )
         .then(function (response: EmmlyResponse) {

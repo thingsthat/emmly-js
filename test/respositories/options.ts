@@ -54,14 +54,14 @@ export default () => {
       const client = new EmmlyClient()
       client
         .query(
-          `mutation repositoryOption($repositoryId: ID!, $name: String!, $value: JSON!) { 
-                repositoryOption(repositoryId: $repositoryId, name: $name, value: $value) {
+          `mutation repositoryOption($repositorySlug: String!, $name: String!, $value: JSON!) { 
+                repositoryOption(repositorySlug: $repositorySlug, name: $name, value: $value) {
                     options
                 }
             }`,
           {
             name: 'repository',
-            repositoryId: repositoryFixture.id,
+            repositorySlug: repositoryFixture.id,
             value: {
               enabled: true,
             },
