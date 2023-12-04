@@ -4,8 +4,8 @@ import { EmmlyResponse } from '../client'
  * Complex response error.
  */
 export class EmmlyResponseError extends Error {
-  status: number
   errors: any
+  status: number
 
   /**
    * Constructor from response.

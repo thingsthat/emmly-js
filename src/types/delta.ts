@@ -4,7 +4,7 @@ export type Delta = {
 }
 
 export type DeltaOp = {
-  insert: any
+  type?: 'divider' | 'embed' | 'media'
   attributes?: any
-  type?: 'media' | 'embed' | 'divider'
+  insert: any
 }

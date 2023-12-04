@@ -25,8 +25,8 @@ export default () => {
                 }
             }`,
           {
-            repositorySlug: repositoryFixture.id,
             content: contentFixture2,
+            repositorySlug: repositoryFixture.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -189,9 +189,9 @@ export default () => {
                 }
             }`,
           {
+            access: 'public',
             contentId: contentFixture2.id,
             status: 'published',
-            access: 'public',
           },
         )
         .then(function (response: EmmlyResponse) {

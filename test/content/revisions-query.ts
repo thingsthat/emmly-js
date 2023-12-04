@@ -47,8 +47,8 @@ export default () => {
                 }
             }`,
           {
-            repositoryId: repositoryFixture.id,
             contentId: contentFixture.id,
+            repositoryId: repositoryFixture.id,
           },
         )
         .then(function (response: EmmlyResponse) {

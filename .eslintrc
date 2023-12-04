@@ -15,7 +15,8 @@
     "plugin:prettier/recommended",
     "plugin:security/recommended",
     "plugin:sonarjs/recommended",
-    "plugin:import/recommended"
+    "plugin:import/recommended",
+    "plugin:perfectionist/recommended-natural"
   ],
   "rules": {
     "linebreak-style": ["error", "unix"],
@@ -86,6 +87,54 @@
         "groups": [["builtin", "external"], "internal", "parent", "sibling", "index"],
         "newlines-between": "always",
         "alphabetize": { "order": "asc" }
+      }
+    ],
+
+    // Perfectionist sorting
+    "perfectionist/sort-imports": "off",
+    "perfectionist/sort-interfaces": [
+      "error",
+      {
+        "type": "natural",
+        "order": "asc",
+        "groups": ["type", "id", "name", "description", "where"],
+        "custom-groups": {
+          "type": "type",
+          "id": "id",
+          "name": "name",
+          "description": "description",
+          "where": "where"
+        }
+      }
+    ],
+    "perfectionist/sort-object-types": [
+      "error",
+      {
+        "type": "natural",
+        "order": "asc",
+        "groups": ["type", "id", "name", "description", "where"],
+        "custom-groups": {
+          "type": "type",
+          "id": "id",
+          "name": "name",
+          "description": "description",
+          "where": "where"
+        }
+      }
+    ],
+    "perfectionist/sort-objects": [
+      "error",
+      {
+        "type": "natural",
+        "order": "asc",
+        "groups": ["type", "id", "name", "description", "where"],
+        "custom-groups": {
+          "type": "type",
+          "id": "id",
+          "name": "name",
+          "description": "description",
+          "where": "where"
+        }
       }
     ]
   },

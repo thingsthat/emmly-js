@@ -41,11 +41,11 @@ describe('EmmlyUploader', () => {
     const mockHandler = jest.fn()
     uploader.on('progress', mockHandler)
 
-    uploader.emit('progress', { referenceId: 'file1', loaded: 100, total: 500 })
+    uploader.emit('progress', { loaded: 100, referenceId: 'file1', total: 500 })
 
     expect(mockHandler).toHaveBeenCalledWith({
-      referenceId: 'file1',
       loaded: 100,
+      referenceId: 'file1',
       total: 500,
     })
   })

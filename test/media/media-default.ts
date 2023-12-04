@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 import fs from 'fs'
 
-import { EmmlyClient, EmmlyUploader, UploadEventPayload } from '../../src'
+import { EmmlyClient, EmmlyUploader } from '../../src'
 import { fixture, repositoryFixture } from '../fixtures'
 
 export default () => {
@@ -20,34 +20,37 @@ export default () => {
         ['defaultmedia'],
       )
 
-      uploader.on('chunkProgress', ({ referenceId }: UploadEventPayload) => {
-        assert.strictEqual(referenceId, 'test-small')
+      uploader.on('chunkProgress', (payload) => {
+        assert.strictEqual(payload?.referenceId, 'test-small')
       })
 
-      uploader.on('chunkComplete', ({ referenceId }: UploadEventPayload) => {
-        assert.strictEqual(referenceId, 'test-small')
+      uploader.on('chunkComplete', (payload) => {
+        assert.strictEqual(payload?.referenceId, 'test-small')
       })
 
-      uploader.on(
-        'fileComplete',
-        ({ referenceId, content }: UploadEventPayload) => {
-          assert.strictEqual(referenceId, 'test-small')
+      uploader.on('fileComplete', (payload) => {
+        assert.strictEqual(payload?.referenceId, 'test-small')
 
-          assert.isNotNull(content, 'No response object')
-          assert.exists(content.data, 'Has no data')
-          assert.exists(content.data.versions, 'Has no versions')
+        assert.isNotNull(payload?.content, 'No response object')
+        assert.exists(payload?.content.data, 'Has no data')
+        assert.exists(payload?.content.data.versions, 'Has no versions')
 
-          assert.exists(content.data.versions.primary, 'Has no primary version')
-          assert.exists(
-            content.data.versions.primarywebp,
-            'Has no primary webp version',
-          )
-          assert.exists(content.data.versions.preview, 'Has no preview version')
+        assert.exists(
+          payload?.content.data.versions.primary,
+          'Has no primary version',
+        )
+        assert.exists(
+          payload?.content.data.versions.primarywebp,
+          'Has no primary webp version',
+        )
+        assert.exists(
+          payload?.content.data.versions.preview,
+          'Has no preview version',
+        )
 
-          // Set content id for later use on another test for actions execute
-          fixture.imageContentId = content.id
-        },
-      )
+        // Set content id for later use on another test for actions execute
+        fixture.imageContentId = payload?.content.id
+      })
 
       uploader.on('uploading', () => {})
 
@@ -72,31 +75,34 @@ export default () => {
         ['defaultmedia'],
       )
 
-      uploader.on('chunkProgress', ({ referenceId }: UploadEventPayload) => {
-        assert.strictEqual(referenceId, 'test')
+      uploader.on('chunkProgress', (payload) => {
+        assert.strictEqual(payload?.referenceId, 'test')
       })
 
-      uploader.on('chunkComplete', ({ referenceId }: UploadEventPayload) => {
-        assert.strictEqual(referenceId, 'test')
+      uploader.on('chunkComplete', (payload) => {
+        assert.strictEqual(payload?.referenceId, 'test')
       })
 
-      uploader.on(
-        'fileComplete',
-        ({ referenceId, content }: UploadEventPayload) => {
-          assert.strictEqual(referenceId, 'test')
+      uploader.on('fileComplete', (payload) => {
+        assert.strictEqual(payload?.referenceId, 'test')
 
-          assert.isNotNull(content, 'No response object')
-          assert.exists(content.data, 'Has no data')
-          assert.exists(content.data.versions, 'Has no versions')
+        assert.isNotNull(payload?.content, 'No response object')
+        assert.exists(payload?.content.data, 'Has no data')
+        assert.exists(payload?.content.data.versions, 'Has no versions')
 
-          assert.exists(content.data.versions.primary, 'Has no primary version')
-          assert.exists(
-            content.data.versions.primarywebp,
-            'Has no primary webp version',
-          )
-          assert.exists(content.data.versions.preview, 'Has no preview version')
-        },
-      )
+        assert.exists(
+          payload?.content.data.versions.primary,
+          'Has no primary version',
+        )
+        assert.exists(
+          payload?.content.data.versions.primarywebp,
+          'Has no primary webp version',
+        )
+        assert.exists(
+          payload?.content.data.versions.preview,
+          'Has no preview version',
+        )
+      })
 
       uploader.on('complete', () => {
         done()
@@ -119,31 +125,34 @@ export default () => {
         ['defaultmedia'],
       )
 
-      uploader.on('chunkProgress', ({ referenceId }: UploadEventPayload) => {
-        assert.strictEqual(referenceId, 'test')
+      uploader.on('chunkProgress', (payload) => {
+        assert.strictEqual(payload?.referenceId, 'test')
       })
 
-      uploader.on('chunkComplete', ({ referenceId }: UploadEventPayload) => {
-        assert.strictEqual(referenceId, 'test')
+      uploader.on('chunkComplete', (payload) => {
+        assert.strictEqual(payload?.referenceId, 'test')
       })
 
-      uploader.on(
-        'fileComplete',
-        ({ referenceId, content }: UploadEventPayload) => {
-          assert.strictEqual(referenceId, 'test')
+      uploader.on('fileComplete', (payload) => {
+        assert.strictEqual(payload?.referenceId, 'test')
 
-          assert.isNotNull(content, 'No response object')
-          assert.exists(content.data, 'Has no data')
-          assert.exists(content.data.versions, 'Has no versions')
+        assert.isNotNull(payload?.content, 'No response object')
+        assert.exists(payload?.content.data, 'Has no data')
+        assert.exists(payload?.content.data.versions, 'Has no versions')
 
-          assert.exists(content.data.versions.primary, 'Has no primary version')
-          assert.exists(
-            content.data.versions.primarywebp,
-            'Has no primary webp version',
-          )
-          assert.exists(content.data.versions.preview, 'Has no preview version')
-        },
-      )
+        assert.exists(
+          payload?.content.data.versions.primary,
+          'Has no primary version',
+        )
+        assert.exists(
+          payload?.content.data.versions.primarywebp,
+          'Has no primary webp version',
+        )
+        assert.exists(
+          payload?.content.data.versions.preview,
+          'Has no preview version',
+        )
+      })
 
       uploader.on('cancelled', () => {})
 

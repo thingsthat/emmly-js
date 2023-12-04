@@ -36,8 +36,8 @@ export default () => {
     it('should update model', function (done) {
       // Add field
       modelFixture.fields.push({
-        name: 'image',
         type: 'image',
+        name: 'image',
         label: 'Image',
       })
 

@@ -2,10 +2,10 @@ import { EmmlyOptions, EmmlyResponse } from './client'
 import { EmmlyResponseError } from './errors/EmmlyResponseError'
 
 type InterceptRequest = {
-  url: string
+  error?: EmmlyResponseError
   options: Partial<EmmlyOptions>
   response?: EmmlyResponse
-  error?: EmmlyResponseError
+  url: string
 }
 
 /**
@@ -18,14 +18,14 @@ export class Interceptors {
     this.handlers = []
   }
 
-  use(handler: (request: InterceptRequest) => void) {
-    this.handlers.push(handler)
-    return this.handlers.length - 1
-  }
-
   forEach(value: InterceptRequest) {
     for (const handler of this.handlers) {
       handler(value)
     }
+  }
+
+  use(handler: (request: InterceptRequest) => void) {
+    this.handlers.push(handler)
+    return this.handlers.length - 1
   }
 }

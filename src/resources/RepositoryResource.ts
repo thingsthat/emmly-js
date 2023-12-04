@@ -10,26 +10,6 @@ export default class RepositoryResource extends Resource {
     super(client)
   }
 
-  repository(slug: string): RepositoryResource {
-    this.variables.slug = slug
-    return this
-  }
-
-  sortBy(sortBy: string): RepositoryResource {
-    this.variables.sortBy = sortBy
-    return this
-  }
-
-  sortUp(): RepositoryResource {
-    this.variables.sortDirection = 'ASC'
-    return this
-  }
-
-  sortDown(): RepositoryResource {
-    this.variables.sortDirection = 'DESC'
-    return this
-  }
-
   /**
    * Fetch repository or repositories if no repository id is set.
    *
@@ -55,10 +35,10 @@ export default class RepositoryResource extends Resource {
 
     const response = await this.client.query(
       `query repositories($sortBy: String, $sortDirection: SortDirection) { 
-            repositories(sortBy: $sortBy, sortDirection: $sortDirection) { 
-                ${fields}
-            }
-        }`,
+        repositories(sortBy: $sortBy, sortDirection: $sortDirection) { 
+          ${Array.isArray(fields) ? fields.join(' ') : fields}
+        }
+      }`,
       this.variables,
     )
 
@@ -66,5 +46,25 @@ export default class RepositoryResource extends Resource {
       data: response.data.repositories,
       headers: response.headers,
     }
+  }
+
+  repository(slug: string): RepositoryResource {
+    this.variables.slug = slug
+    return this
+  }
+
+  sortBy(sortBy: string): RepositoryResource {
+    this.variables.sortBy = sortBy
+    return this
+  }
+
+  sortDown(): RepositoryResource {
+    this.variables.sortDirection = 'DESC'
+    return this
+  }
+
+  sortUp(): RepositoryResource {
+    this.variables.sortDirection = 'ASC'
+    return this
   }
 }

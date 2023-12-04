@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { fixture, actionFixture, repositoryFixture } from '../fixtures'
+import { actionFixture, fixture, repositoryFixture } from '../fixtures'
 
 export default () => {
   describe('Emmly actions execute', function () {
@@ -17,8 +17,8 @@ export default () => {
             }`,
           {
             action: actionFixture.id,
-            repositoryId: repositoryFixture.id,
             contentId: fixture.imageContentId,
+            repositoryId: repositoryFixture.id,
           },
         )
         .then(function (response: EmmlyResponse) {

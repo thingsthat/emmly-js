@@ -17,8 +17,8 @@ export default () => {
                 }
             }`,
           {
-            workflow: workflowFixture,
             repositorySlug: repositoryFixture.id,
+            workflow: workflowFixture,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -63,8 +63,8 @@ export default () => {
                 }
             }`,
           {
-            workflow: workflowFixture,
             repositorySlug: repositoryFixture.id,
+            workflow: workflowFixture,
           },
         )
         .then(function (response: EmmlyResponse) {

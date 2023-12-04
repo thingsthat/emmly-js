@@ -60,8 +60,8 @@ export default () => {
                 }
             }`,
           {
-            repositoryId: repositoryFixture.id,
             name: 'repository',
+            repositoryId: repositoryFixture.id,
             value: {
               enabled: true,
             },

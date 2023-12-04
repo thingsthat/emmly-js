@@ -2,9 +2,9 @@ import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
 import {
-  fixture,
   contentFixture,
   contentFixture2,
+  fixture,
   repositoryFixture,
 } from '../fixtures'
 

@@ -7,17 +7,17 @@ export default class Resource {
   client: EmmlyClient
 
   variables: {
-    sortBy?: string
-    slug?: string
-    sortDirection?: 'ASC' | 'DESC'
-    repositoryId?: string
     type?: string
-    personId?: string
-    pageSize?: number
     page?: number
-    status?: string | string[]
+    pageSize?: number
+    personId?: string
     published?: boolean
-    tags?: string[] | string
+    repositoryId?: string
+    slug?: string
+    sortBy?: string
+    sortDirection?: 'ASC' | 'DESC'
+    status?: string | string[]
+    tags?: string | string[]
   }
 
   constructor(client: EmmlyClient) {

@@ -10,14 +10,25 @@ export default class ModelResource extends Resource {
     super(client)
   }
 
-  model(slug: string): ModelResource {
-    this.variables.slug = slug
-    return this
-  }
+  async delete(): Promise<EmmlyResponse> {
+    if (!this.variables.slug) {
+      throw new Error('Model ID needs to be supplied before you can delete.')
+    }
 
-  repository(repositoryId: string): ModelResource {
-    this.variables.repositoryId = repositoryId
-    return this
+    const response = await this.client.query(
+      `mutation deleteModel($slug: String!, $repositoryId: ID) {
+        deleteModel(slug: $slug, repositoryId: $repositoryId) {
+          id
+          name
+        }
+      }`,
+      this.variables,
+    )
+
+    return {
+      data: response.data.deleteModel,
+      headers: response.headers,
+    }
   }
 
   async fetch(fields: string | string[]): Promise<EmmlyResponse> {
@@ -52,24 +63,13 @@ export default class ModelResource extends Resource {
     }
   }
 
-  async delete(): Promise<EmmlyResponse> {
-    if (!this.variables.slug) {
-      throw new Error('Model ID needs to be supplied before you can delete.')
-    }
+  model(slug: string): ModelResource {
+    this.variables.slug = slug
+    return this
+  }
 
-    const response = await this.client.query(
-      `mutation deleteModel($slug: String!, $repositoryId: ID) {
-        deleteModel(slug: $slug, repositoryId: $repositoryId) {
-          id
-          name
-        }
-      }`,
-      this.variables,
-    )
-
-    return {
-      data: response.data.deleteModel,
-      headers: response.headers,
-    }
+  repository(repositoryId: string): ModelResource {
+    this.variables.repositoryId = repositoryId
+    return this
   }
 }

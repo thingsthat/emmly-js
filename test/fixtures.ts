@@ -2,33 +2,33 @@ const uniqueTestName = new Date().getTime()
 
 type Repository = {
   id?: string
-  primaryLanguage: string
   name: string
   options: any
+  primaryLanguage: string
 }
 
 export const repositoryFixture: Repository = {
-  primaryLanguage: 'en',
   name: `repository${uniqueTestName}`,
   options: null,
+  primaryLanguage: 'en',
 }
 
 type Action = {
+  type: string
   id?: string
   name: string
-  type: string
   options: any
 }
 
 export const actionFixture: Action = {
-  name: 'test-image-main',
   type: 'imageresize',
+  name: 'test-image-main',
   options: {
-    width: 1200,
     format: 'jpg',
     height: 670,
     quality: 80,
     suffix: '-main',
+    width: 1200,
   },
 }
 
@@ -61,24 +61,24 @@ export const modelFixture: Model = {
   name: 'testmodel',
   fields: [
     {
-      name: 'title',
       type: 'text',
+      name: 'title',
       label: 'Title',
     },
     {
-      name: 'description',
       type: 'text',
+      name: 'description',
       label: 'Description',
     },
   ],
 }
 
 type Content = {
-  id?: string
-  repository?: string
-  name: string
   type?: string
+  id?: string
+  name: string
   data: any
+  repository?: string
   tags?: string[]
 }
 
@@ -98,6 +98,6 @@ export const contentFixture2: Content = {
 }
 
 export const fixture = {
-  revisionId: null,
   imageContentId: null,
+  revisionId: null,
 }

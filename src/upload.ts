@@ -8,44 +8,44 @@ import Bottleneck from 'bottleneck'
 import { EmmlyClient } from '.'
 
 export type UploadEvent =
-  | 'complete'
-  | 'resumed'
-  | 'paused'
   | 'cancelled'
-  | 'progress'
-  | 'error'
-  | 'reset'
-  | 'uploading'
-  | 'fileComplete'
-  | 'chunkProgress'
   | 'chunkComplete'
-  | 'fileResumed'
-  | 'filePaused'
+  | 'chunkProgress'
+  | 'complete'
+  | 'error'
   | 'fileCancelled'
+  | 'fileComplete'
   | 'fileError'
+  | 'filePaused'
   | 'fileReset'
+  | 'fileResumed'
+  | 'paused'
+  | 'progress'
+  | 'reset'
+  | 'resumed'
+  | 'uploading'
 
 export type UploadEventPayload = {
-  referenceId: string
+  chunks?: { [key: string]: Chunk }
   content?: any
+  error?: Error
   loaded?: number
-  total?: number
   maxOffset?: number
   offset?: number
-  chunks?: { [key: string]: Chunk }
-  error?: Error
+  referenceId: string
+  total?: number
 }
 
 type Chunk = {
-  offset: number
-  maxOffset: number
-  startByte: number
+  cancelSource?: CancelTokenSource
   endByte: number
-  size: number
   isComplete?: boolean
   loaded: number
+  maxOffset: number
+  offset: number
+  size: number
+  startByte: number
   url?: string
-  cancelSource?: CancelTokenSource
 }
 
 type UploadEventHandler = (payload?: UploadEventPayload) => void
@@ -54,35 +54,17 @@ type UploadEventHandler = (payload?: UploadEventPayload) => void
  * Uploader for the Emmly API.
  */
 export class EmmlyUploader {
-  files: { [key: string]: UploadFile }
-  events: { [key in UploadEvent]?: UploadEventHandler[] } = {}
-  client: EmmlyClient
-
   // Bytes per chunk
   chunkSize: number = 7 * 1024 * 1024
+  client: EmmlyClient
+  events: { [key in UploadEvent]?: UploadEventHandler[] } = {}
+
+  files: { [key: string]: UploadFile }
 
   constructor(client: EmmlyClient) {
     this.files = {}
     this.events = {}
     this.client = client
-  }
-
-  /**
-   * Sets the client to use for the uploader.
-   *
-   * @param {*} client - The client to use for the uploader.
-   */
-  setClient(client: EmmlyClient) {
-    this.client = client
-  }
-
-  /**
-   * Checks if there are uploads.
-   *
-   * @returns {boolean} - True if there are uploads, false otherwise.
-   */
-  hasUploads() {
-    return Object.keys(this.files).length > 0
   }
 
   /**
@@ -128,99 +110,16 @@ export class EmmlyUploader {
       const chunkKey = `${offset}_${maxOffset}`
 
       file.addChunk(chunkKey, {
-        offset,
-        maxOffset,
-        startByte,
         endByte,
-        size: chunkSize,
         loaded: 0,
+        maxOffset,
+        offset,
+        size: chunkSize,
+        startByte,
       })
     }
 
     this.files[referenceId] = file
-  }
-
-  /**
-   * Begins uploading a file.
-   *
-   * @param {string} referenceId - The reference key for the file.
-   */
-  async upload(referenceId: string) {
-    const file = this.files[referenceId]
-
-    if (!file.isComplete) {
-      await file.upload()
-    }
-  }
-
-  /**
-   * Begins uploading all files.
-   */
-  uploadAll() {
-    for (const referenceId of Object.keys(this.files)) {
-      this.upload(referenceId)
-    }
-  }
-
-  /**
-   * Checks if all files have completed. If they have, then emit completed.
-   */
-  complete() {
-    for (const file of Object.values(this.files)) {
-      if (!file.isComplete) {
-        return
-      }
-    }
-
-    this.emit('complete')
-  }
-
-  /**
-   * Resumes a file upload.
-   *
-   * @param {string} referenceId - The reference key for the file.
-   */
-  async resume(referenceId: string) {
-    const file = this.files[referenceId]
-
-    if (!file.isComplete) {
-      await file.resume()
-    }
-  }
-
-  /**
-   * Resumes all file uploads.
-   */
-  resumeAll() {
-    for (const referenceId of Object.keys(this.files)) {
-      this.resume(referenceId)
-    }
-
-    this.emit('resumed')
-  }
-
-  /**
-   * Pauses a file upload.
-   *
-   * @param {string} referenceId - The reference key for the file.
-   */
-  async pause(referenceId: string) {
-    const file = this.files[referenceId]
-
-    if (!file.isComplete) {
-      await file.pause()
-    }
-  }
-
-  /**
-   * Pauses all file uploads.
-   */
-  pauseAll() {
-    for (const referenceId of Object.keys(this.files)) {
-      this.pause(referenceId)
-    }
-
-    this.emit('paused')
   }
 
   /**
@@ -248,26 +147,35 @@ export class EmmlyUploader {
   }
 
   /**
-   * Removes a file from the uploader.
-   *
-   * @param {string} referenceId - The reference key for the file.
+   * Checks if all files have completed. If they have, then emit completed.
    */
-  remove(referenceId: string) {
-    this.cancel(referenceId)
+  complete() {
+    for (const file of Object.values(this.files)) {
+      if (!file.isComplete) {
+        return
+      }
+    }
 
-    delete this.files[referenceId]
+    this.emit('complete')
   }
 
   /**
-   * Resets the uploader.
+   * Emits an event.
+   *
+   * @param {UploadEvent} event - The event to emit.
+   * @param {UploadEventPayload} data - The data to emit with the event.
    */
-  reset() {
-    for (const referenceId of Object.keys(this.files)) {
-      this.remove(referenceId)
-    }
+  emit(event: UploadEvent, data?: UploadEventPayload) {
+    this.events[event]?.forEach((handler) => handler(data))
+  }
 
-    this.emit('cancelled')
-    this.emit('reset')
+  /**
+   * Checks if there are uploads.
+   *
+   * @returns {boolean} - True if there are uploads, false otherwise.
+   */
+  hasUploads() {
+    return Object.keys(this.files).length > 0
   }
 
   /**
@@ -284,13 +192,27 @@ export class EmmlyUploader {
   }
 
   /**
-   * Emits an event.
+   * Pauses a file upload.
    *
-   * @param {UploadEvent} event - The event to emit.
-   * @param {UploadEventPayload} data - The data to emit with the event.
+   * @param {string} referenceId - The reference key for the file.
    */
-  emit(event: UploadEvent, data?: UploadEventPayload) {
-    this.events[event]?.forEach((handler) => handler(data))
+  async pause(referenceId: string) {
+    const file = this.files[referenceId]
+
+    if (!file.isComplete) {
+      await file.pause()
+    }
+  }
+
+  /**
+   * Pauses all file uploads.
+   */
+  pauseAll() {
+    for (const referenceId of Object.keys(this.files)) {
+      this.pause(referenceId)
+    }
+
+    this.emit('paused')
   }
 
   /**
@@ -319,6 +241,53 @@ export class EmmlyUploader {
   }
 
   /**
+   * Removes a file from the uploader.
+   *
+   * @param {string} referenceId - The reference key for the file.
+   */
+  remove(referenceId: string) {
+    this.cancel(referenceId)
+
+    delete this.files[referenceId]
+  }
+
+  /**
+   * Resets the uploader.
+   */
+  reset() {
+    for (const referenceId of Object.keys(this.files)) {
+      this.remove(referenceId)
+    }
+
+    this.emit('cancelled')
+    this.emit('reset')
+  }
+
+  /**
+   * Resumes a file upload.
+   *
+   * @param {string} referenceId - The reference key for the file.
+   */
+  async resume(referenceId: string) {
+    const file = this.files[referenceId]
+
+    if (!file.isComplete) {
+      await file.resume()
+    }
+  }
+
+  /**
+   * Resumes all file uploads.
+   */
+  resumeAll() {
+    for (const referenceId of Object.keys(this.files)) {
+      this.resume(referenceId)
+    }
+
+    this.emit('resumed')
+  }
+
+  /**
    * Set the chunk size. This is used by the chunk uploader to set the chunk size.
    *
    * @param {number} chunkSize - The chunk size in bytes.
@@ -326,22 +295,53 @@ export class EmmlyUploader {
   setChunkSize(chunkSize: number) {
     this.chunkSize = chunkSize
   }
+
+  /**
+   * Sets the client to use for the uploader.
+   *
+   * @param {*} client - The client to use for the uploader.
+   */
+  setClient(client: EmmlyClient) {
+    this.client = client
+  }
+
+  /**
+   * Begins uploading a file.
+   *
+   * @param {string} referenceId - The reference key for the file.
+   */
+  async upload(referenceId: string) {
+    const file = this.files[referenceId]
+
+    if (!file.isComplete) {
+      await file.upload()
+    }
+  }
+
+  /**
+   * Begins uploading all files.
+   */
+  uploadAll() {
+    for (const referenceId of Object.keys(this.files)) {
+      this.upload(referenceId)
+    }
+  }
 }
 
 export class UploadFile {
-  uploader: EmmlyUploader
-  referenceId: string
-  name: string
-  buffer: Buffer
-  size: number
-  repositoryId: string
-  parentContentId?: string
-  contentType: string
   actions: string[]
+  buffer: Buffer
   chunks: { [key: string]: Chunk }
+  contentType: string
   isComplete: boolean
+  name: string
+  parentContentId?: string
   queue?: Bottleneck
+  referenceId: string
+  repositoryId: string
+  size: number
   target: any
+  uploader: EmmlyUploader
 
   constructor(
     uploader: EmmlyUploader,
@@ -370,6 +370,122 @@ export class UploadFile {
     this.isComplete = false
   }
 
+  add(key: string, chunk: Chunk) {
+    this.chunks[key] = chunk
+  }
+
+  addChunk(key: string, chunk: Chunk) {
+    this.chunks[key] = chunk
+
+    this.chunks[key].isComplete = false
+  }
+
+  /**
+   * Cancel the queue and don't save informaiton.
+   */
+  async cancel() {
+    // Stop the queue
+    if (this.queue) {
+      this.queue.stop()
+    }
+
+    // Cancel requests
+    for (const chunkKey in this.chunks) {
+      const chunk = this.chunks[chunkKey]
+
+      if ('cancelSource' in chunk) {
+        chunk.cancelSource?.cancel()
+      }
+    }
+
+    this.isComplete = true
+
+    this.uploader.emit('fileCancelled', { referenceId: this.referenceId })
+  }
+
+  /**
+   * After all chunks are done.
+   */
+  async complete() {
+    const referenceId = this.referenceId
+
+    try {
+      const { data } = await this.uploader.client.query(
+        `query uploadCallback($key: String, $contentType: String!, $name: String!, $repositoryId: ID!, $actions: [String], $chunks: JSON, $parentContentId: ID) { 
+                uploadCallback(key: $key, contentType: $contentType, name: $name, repositoryId: $repositoryId, actions: $actions, chunks: $chunks, parentContentId: $parentContentId) {
+                            id
+                            name
+                            data
+                        }
+                    }`,
+        {
+          name: this.name,
+          actions: this.actions,
+          chunks: this.chunks,
+          contentType: this.contentType,
+          key: this.target.key,
+          parentContentId: this.parentContentId,
+          repositoryId: this.repositoryId,
+        },
+      )
+
+      const content = data.uploadCallback
+
+      this.isComplete = true
+
+      // Upload complete and we have our content
+      this.uploader.emit('fileComplete', { content, referenceId })
+
+      this.uploader.complete()
+    } catch (error) {
+      this.uploader.emit('error', { error, referenceId })
+    }
+  }
+
+  async pause() {
+    // Cancel requests
+    for (const chunkKey in this.chunks) {
+      if ('cancelSource' in this.chunks[chunkKey]) {
+        this.chunks[chunkKey].cancelSource?.cancel()
+      }
+    }
+
+    // Stop the queue
+    if (this.queue) {
+      await this.queue.stop()
+    }
+
+    this.uploader.emit('filePaused', {
+      chunks: this.chunks,
+      referenceId: this.referenceId,
+    })
+  }
+
+  progress() {
+    const total = this.size
+
+    let loaded = 0
+
+    for (const chunkKey in this.chunks) {
+      loaded += this.chunks[chunkKey].loaded
+    }
+
+    this.uploader.emit('progress', {
+      loaded,
+      referenceId: this.referenceId,
+      total,
+    })
+  }
+
+  async resume() {
+    this.uploader.emit('fileResumed', {
+      chunks: this.chunks,
+      referenceId: this.referenceId,
+    })
+
+    await this.upload()
+  }
+
   async upload() {
     const referenceId = this.referenceId
 
@@ -383,9 +499,9 @@ export class UploadFile {
                         }
                     }`,
         {
-          repositoryId: this.repositoryId,
-          contentType: this.contentType,
           chunks: this.chunks,
+          contentType: this.contentType,
+          repositoryId: this.repositoryId,
         },
       )
 
@@ -394,7 +510,7 @@ export class UploadFile {
       // For each upload chunk set the chunks corresponding key and down download target
       this.target = upload
     } catch (error) {
-      return this.uploader.emit('error', { referenceId, error })
+      return this.uploader.emit('error', { error, referenceId })
     }
 
     for (const chunkKey in this.chunks) {
@@ -407,6 +523,60 @@ export class UploadFile {
     }
 
     await this.uploadChunks()
+  }
+
+  async uploadChunk(chunkKey: string) {
+    const slice = this.buffer.subarray(
+      this.chunks[chunkKey].startByte,
+      this.chunks[chunkKey].endByte,
+    )
+    const referenceId = this.referenceId
+
+    const cancelToken = axios.CancelToken
+    const cancelSource = cancelToken.source()
+
+    this.chunks[chunkKey].cancelSource = cancelSource
+
+    await this.uploader.put(
+      this.chunks[chunkKey].url || '',
+      slice,
+      this.contentType,
+      cancelSource.token,
+      (progressEvent: AxiosProgressEvent) => {
+        const loaded = progressEvent.loaded
+        const total = progressEvent.total
+        const offset = this.chunks[chunkKey].offset
+        const maxOffset = this.chunks[chunkKey].maxOffset
+
+        this.uploader.emit('chunkProgress', {
+          loaded,
+          maxOffset,
+          offset,
+          referenceId,
+          total,
+        })
+
+        this.chunks[chunkKey].loaded = loaded
+
+        this.progress()
+      },
+    )
+
+    this.chunks[chunkKey].isComplete = true
+    this.chunks[chunkKey].loaded = this.chunks[chunkKey].size
+
+    const offset = this.chunks[chunkKey].offset
+    const maxOffset = this.chunks[chunkKey].maxOffset
+
+    this.uploader.emit('chunkProgress', {
+      loaded: this.chunks[chunkKey].size,
+      maxOffset,
+      offset,
+      referenceId,
+      total: this.chunks[chunkKey].size,
+    })
+
+    this.progress()
   }
 
   async uploadChunks() {
@@ -441,177 +611,7 @@ export class UploadFile {
         return
       }
 
-      this.uploader.emit('error', { referenceId, error })
+      this.uploader.emit('error', { error, referenceId })
     }
-  }
-
-  /**
-   * After all chunks are done.
-   */
-  async complete() {
-    const referenceId = this.referenceId
-
-    try {
-      const { data } = await this.uploader.client.query(
-        `query uploadCallback($key: String, $contentType: String!, $name: String!, $repositoryId: ID!, $actions: [String], $chunks: JSON, $parentContentId: ID) { 
-                uploadCallback(key: $key, contentType: $contentType, name: $name, repositoryId: $repositoryId, actions: $actions, chunks: $chunks, parentContentId: $parentContentId) {
-                            id
-                            name
-                            data
-                        }
-                    }`,
-        {
-          key: this.target.key,
-          contentType: this.contentType,
-          name: this.name,
-          repositoryId: this.repositoryId,
-          actions: this.actions,
-          parentContentId: this.parentContentId,
-          chunks: this.chunks,
-        },
-      )
-
-      const content = data.uploadCallback
-
-      this.isComplete = true
-
-      // Upload complete and we have our content
-      this.uploader.emit('fileComplete', { referenceId, content })
-
-      this.uploader.complete()
-    } catch (error) {
-      this.uploader.emit('error', { referenceId, error })
-    }
-  }
-
-  addChunk(key: string, chunk: Chunk) {
-    this.chunks[key] = chunk
-
-    this.chunks[key].isComplete = false
-  }
-
-  add(key: string, chunk: Chunk) {
-    this.chunks[key] = chunk
-  }
-
-  async uploadChunk(chunkKey: string) {
-    const slice = this.buffer.subarray(
-      this.chunks[chunkKey].startByte,
-      this.chunks[chunkKey].endByte,
-    )
-    const referenceId = this.referenceId
-
-    const cancelToken = axios.CancelToken
-    const cancelSource = cancelToken.source()
-
-    this.chunks[chunkKey].cancelSource = cancelSource
-
-    await this.uploader.put(
-      this.chunks[chunkKey].url || '',
-      slice,
-      this.contentType,
-      cancelSource.token,
-      (progressEvent: AxiosProgressEvent) => {
-        const loaded = progressEvent.loaded
-        const total = progressEvent.total
-        const offset = this.chunks[chunkKey].offset
-        const maxOffset = this.chunks[chunkKey].maxOffset
-
-        this.uploader.emit('chunkProgress', {
-          referenceId,
-          loaded,
-          total,
-          maxOffset,
-          offset,
-        })
-
-        this.chunks[chunkKey].loaded = loaded
-
-        this.progress()
-      },
-    )
-
-    this.chunks[chunkKey].isComplete = true
-    this.chunks[chunkKey].loaded = this.chunks[chunkKey].size
-
-    const offset = this.chunks[chunkKey].offset
-    const maxOffset = this.chunks[chunkKey].maxOffset
-
-    this.uploader.emit('chunkProgress', {
-      referenceId,
-      loaded: this.chunks[chunkKey].size,
-      total: this.chunks[chunkKey].size,
-      maxOffset,
-      offset,
-    })
-
-    this.progress()
-  }
-
-  progress() {
-    const total = this.size
-
-    let loaded = 0
-
-    for (const chunkKey in this.chunks) {
-      loaded += this.chunks[chunkKey].loaded
-    }
-
-    this.uploader.emit('progress', {
-      referenceId: this.referenceId,
-      loaded,
-      total,
-    })
-  }
-
-  async resume() {
-    this.uploader.emit('fileResumed', {
-      referenceId: this.referenceId,
-      chunks: this.chunks,
-    })
-
-    await this.upload()
-  }
-
-  async pause() {
-    // Cancel requests
-    for (const chunkKey in this.chunks) {
-      if ('cancelSource' in this.chunks[chunkKey]) {
-        this.chunks[chunkKey].cancelSource?.cancel()
-      }
-    }
-
-    // Stop the queue
-    if (this.queue) {
-      await this.queue.stop()
-    }
-
-    this.uploader.emit('filePaused', {
-      referenceId: this.referenceId,
-      chunks: this.chunks,
-    })
-  }
-
-  /**
-   * Cancel the queue and don't save informaiton.
-   */
-  async cancel() {
-    // Stop the queue
-    if (this.queue) {
-      this.queue.stop()
-    }
-
-    // Cancel requests
-    for (const chunkKey in this.chunks) {
-      const chunk = this.chunks[chunkKey]
-
-      if ('cancelSource' in chunk) {
-        chunk.cancelSource?.cancel()
-      }
-    }
-
-    this.isComplete = true
-
-    this.uploader.emit('fileCancelled', { referenceId: this.referenceId })
   }
 }

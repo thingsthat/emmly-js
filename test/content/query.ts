@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { repositoryFixture, contentFixture } from '../fixtures'
+import { contentFixture, repositoryFixture } from '../fixtures'
 
 export default () => {
   describe('Emmly content queries', function () {
@@ -47,8 +47,8 @@ export default () => {
                 }
             }`,
           {
-            slug: contentFixture.id,
             repositoryId: repositoryFixture.id,
+            slug: contentFixture.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -82,8 +82,8 @@ export default () => {
                 }
             }`,
           {
-            repositoryId: repositoryFixture.id,
             type: 'media',
+            repositoryId: repositoryFixture.id,
           },
         )
         .then(function (response: EmmlyResponse) {

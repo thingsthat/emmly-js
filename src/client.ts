@@ -14,51 +14,51 @@ const packageAgentName = `${agentName}-0.5.4`
 
 export type EmmlyResponse = {
   data: any
+  errors?: any
   headers: any
   status?: number
-  errors?: any
 }
 
 export type EmmlyOptions = {
-  timeout: number
   headers: { [name: string]: string }
+  timeout: number
   withCredentials?: boolean
 }
 
 type QueryVeriables = {
-  [key: string]: string | number | boolean | null | undefined | any
+  [key: string]: any | boolean | null | number | string | undefined
 }
 
 type RequestParams = {
-  [key: string]: string | number | boolean
+  [key: string]: boolean | number | string
 }
 
 /**
  * Emmly main query class.
  */
 export class EmmlyClient {
+  content: (slug?: string) => ContentResource
+
   debug = false
 
+  interceptors: {
+    fulfilled: Interceptors
+    rejected: Interceptors
+    request: Interceptors
+  }
+  model: (slug?: string) => ModelResource
   options: EmmlyOptions = {
-    timeout: 10000,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
     },
+    timeout: 10000,
   }
 
-  content: (slug?: string) => ContentResource
   repository: (slug?: string) => RepositoryResource
-  model: (slug?: string) => ModelResource
 
-  interceptors: {
-    request: Interceptors
-    fulfilled: Interceptors
-    rejected: Interceptors
-  }
+  token: string | undefined // Default latest API URL
 
-  url = 'https://api.emmly.co/api' // Default latest API URL
-
-  token: string | undefined
+  url = 'https://api.emmly.co/api'
 
   constructor() {
     // Resources
@@ -88,9 +88,9 @@ export class EmmlyClient {
 
     // Interceptors
     this.interceptors = {
-      request: new Interceptors(),
       fulfilled: new Interceptors(),
       rejected: new Interceptors(),
+      request: new Interceptors(),
     }
 
     // Set environment if we have environment variables
@@ -104,45 +104,13 @@ export class EmmlyClient {
     }
   }
 
-  setTimeout(timeout: number) {
-    this.options.timeout = timeout
-  }
-
-  setApi(url: string) {
-    this.url = url
-  }
-
-  setDebug(debug: boolean) {
-    this.debug = debug
-  }
-
-  getUrl() {
-    return this.url
-  }
-
-  getVersion() {
-    return packageAgentName
-  }
-
   /**
-   * Set the API token to be sent with every request.
-   *
-   * @param {string} token - The API token.
+   * Check if a valid API token is set.
    */
-  setToken(token: string) {
-    if (token !== undefined && token !== null) {
-      this.token = token
-      this.options.headers['x-auth'] = token
+  private requiresToken() {
+    if (!this.token || this.token.trim() === '') {
+      throw new Error('A valid API token is required for this operation.')
     }
-  }
-
-  /**
-   * Set a header to be sent with every request.
-   * @param {string} name - The key name of the header.
-   * @param {string} value - The value of the header.
-   */
-  setHeader(name: string, value: string) {
-    this.options.headers[name] = value
   }
 
   /**
@@ -164,110 +132,6 @@ export class EmmlyClient {
     }
 
     return url
-  }
-
-  /**
-   * Check if a valid API token is set.
-   */
-  private requiresToken() {
-    if (!this.token || this.token.trim() === '') {
-      throw new Error('A valid API token is required for this operation.')
-    }
-  }
-
-  /**
-   * Ping the Emmly API to check if it is up and running.
-   *
-   * @returns {Promise<EmmlyResponse>} A Promise that resolves to an EmmlyResponse object.
-   */
-  async ping(): Promise<EmmlyResponse> {
-    const response = await this.request(
-      `${this.url}/ping`,
-      Object.assign(this.options, {
-        method: 'GET',
-      }),
-    )
-
-    this.logDebug('GET', `${this.url}/ping`, response)
-
-    return response
-  }
-
-  async get(
-    endpoint: string,
-    params: RequestParams,
-    options?: Partial<EmmlyOptions>,
-  ): Promise<EmmlyResponse> {
-    const url = this.buildUrl(`${this.url}${endpoint}`, params)
-
-    const response = await this.request(
-      url,
-      Object.assign(
-        {},
-        this.options,
-        {
-          method: 'GET',
-        },
-        options,
-      ),
-    )
-
-    this.logDebug('GET', url, response)
-
-    return response
-  }
-
-  async post(
-    endpoint: string,
-    data?: Object,
-    options?: Partial<EmmlyOptions>,
-  ): Promise<EmmlyResponse> {
-    const url = this.buildUrl(`${this.url}${endpoint}`)
-
-    const response = await this.request(
-      url,
-      Object.assign(
-        {},
-        this.options,
-        {
-          method: 'POST',
-          data,
-        },
-        options,
-      ),
-    )
-
-    this.logDebug('POST', url, response)
-
-    return response
-  }
-
-  async put(
-    endpoint: string,
-    params: RequestParams,
-    data: any,
-    options: Partial<EmmlyOptions>,
-  ): Promise<EmmlyResponse> {
-    this.requiresToken()
-
-    const url = this.buildUrl(`${this.url}${endpoint}`, params)
-
-    const response = await this.request(
-      url,
-      Object.assign(
-        {},
-        this.options,
-        {
-          method: 'PUT',
-          data,
-        },
-        options,
-      ),
-    )
-
-    this.logDebug('PUT', url, response)
-
-    return response
   }
 
   async delete(
@@ -296,6 +160,123 @@ export class EmmlyClient {
     return response
   }
 
+  async get(
+    endpoint: string,
+    params: RequestParams,
+    options?: Partial<EmmlyOptions>,
+  ): Promise<EmmlyResponse> {
+    const url = this.buildUrl(`${this.url}${endpoint}`, params)
+
+    const response = await this.request(
+      url,
+      Object.assign(
+        {},
+        this.options,
+        {
+          method: 'GET',
+        },
+        options,
+      ),
+    )
+
+    this.logDebug('GET', url, response)
+
+    return response
+  }
+
+  getUrl() {
+    return this.url
+  }
+
+  getVersion() {
+    return packageAgentName
+  }
+
+  /**
+   * Log debug information including the method, URL, and response if the debug flag is enabled.
+   * @param {string} method - The method parameter.
+   * @param {string} url - The URL of the request being made.
+   * @param {EmmlyResponse} response - The EmmlyResponse response.
+   */
+  logDebug(method: string, url: string, response: EmmlyResponse) {
+    if (this.debug) {
+      console.log(agentName, 'method', method)
+      console.log(agentName, 'url', url)
+      console.log(agentName, 'response', response)
+    }
+  }
+
+  /**
+   * Ping the Emmly API to check if it is up and running.
+   *
+   * @returns {Promise<EmmlyResponse>} A Promise that resolves to an EmmlyResponse object.
+   */
+  async ping(): Promise<EmmlyResponse> {
+    const response = await this.request(
+      `${this.url}/ping`,
+      Object.assign(this.options, {
+        method: 'GET',
+      }),
+    )
+
+    this.logDebug('GET', `${this.url}/ping`, response)
+
+    return response
+  }
+
+  async post(
+    endpoint: string,
+    data?: Object,
+    options?: Partial<EmmlyOptions>,
+  ): Promise<EmmlyResponse> {
+    const url = this.buildUrl(`${this.url}${endpoint}`)
+
+    const response = await this.request(
+      url,
+      Object.assign(
+        {},
+        this.options,
+        {
+          data,
+          method: 'POST',
+        },
+        options,
+      ),
+    )
+
+    this.logDebug('POST', url, response)
+
+    return response
+  }
+
+  async put(
+    endpoint: string,
+    params: RequestParams,
+    data: any,
+    options: Partial<EmmlyOptions>,
+  ): Promise<EmmlyResponse> {
+    this.requiresToken()
+
+    const url = this.buildUrl(`${this.url}${endpoint}`, params)
+
+    const response = await this.request(
+      url,
+      Object.assign(
+        {},
+        this.options,
+        {
+          data,
+          method: 'PUT',
+        },
+        options,
+      ),
+    )
+
+    this.logDebug('PUT', url, response)
+
+    return response
+  }
+
   // Main queries
   async query(
     query: string,
@@ -307,11 +288,11 @@ export class EmmlyClient {
     const response = await this.request(
       url,
       Object.assign({}, this.options, {
-        method: 'POST',
         data: {
           query,
           variables,
         },
+        method: 'POST',
       }),
     )
 
@@ -338,7 +319,7 @@ export class EmmlyClient {
 
     try {
       // Request options intercepters
-      this.interceptors.request.forEach({ url, options })
+      this.interceptors.request.forEach({ options, url })
 
       // Make response
       const response = await axios(url, options)
@@ -348,10 +329,10 @@ export class EmmlyClient {
       // Clean headers
       // End response to user
       const cleanResponse: EmmlyResponse = {
-        headers: response.headers,
-        status: response.status,
         data: response.data,
         errors: response.data.errors,
+        headers: response.headers,
+        status: response.status,
       }
 
       if (response.status >= 400) {
@@ -359,9 +340,9 @@ export class EmmlyClient {
       } else {
         // Dispatch fulfilled intercepters
         this.interceptors.fulfilled.forEach({
-          url,
           options,
           response: cleanResponse,
+          url,
         })
       }
 
@@ -371,30 +352,49 @@ export class EmmlyClient {
 
       if ('response' in err) {
         const error = new EmmlyResponseError({
+          data: err.response.data,
           headers: err.response.headers,
           status: err.response.status,
-          data: err.response.data,
         })
 
         // Dispatch rejected intercepters
-        this.interceptors.rejected.forEach({ url, options, error })
+        this.interceptors.rejected.forEach({ error, options, url })
       }
 
       throw err
     }
   }
 
+  setApi(url: string) {
+    this.url = url
+  }
+
+  setDebug(debug: boolean) {
+    this.debug = debug
+  }
+
   /**
-   * Log debug information including the method, URL, and response if the debug flag is enabled.
-   * @param {string} method - The method parameter.
-   * @param {string} url - The URL of the request being made.
-   * @param {EmmlyResponse} response - The EmmlyResponse response.
+   * Set a header to be sent with every request.
+   * @param {string} name - The key name of the header.
+   * @param {string} value - The value of the header.
    */
-  logDebug(method: string, url: string, response: EmmlyResponse) {
-    if (this.debug) {
-      console.log(agentName, 'method', method)
-      console.log(agentName, 'url', url)
-      console.log(agentName, 'response', response)
+  setHeader(name: string, value: string) {
+    this.options.headers[name] = value
+  }
+
+  setTimeout(timeout: number) {
+    this.options.timeout = timeout
+  }
+
+  /**
+   * Set the API token to be sent with every request.
+   *
+   * @param {string} token - The API token.
+   */
+  setToken(token: string) {
+    if (token !== undefined && token !== null) {
+      this.token = token
+      this.options.headers['x-auth'] = token
     }
   }
 }
