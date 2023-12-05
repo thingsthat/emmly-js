@@ -1,27 +1,29 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import {
-  contentFixture,
-  contentFixture2,
-  fixture,
-  repositoryFixture,
-} from '../fixtures'
+import { IContent } from '../../src/types/content'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (
+  mockRepository: IRepository,
+  mockContent: IContent,
+  mockContent2: IContent,
+  mockContent3: IContent,
+  mockContent4: IContent,
+) => {
   describe('Emmly delete content', function () {
     it("should delete contents by id's via resource", function (done) {
       const client = new EmmlyClient()
       client
-        .content(contentFixture.id)
-        .repository(repositoryFixture.id || '')
+        .content(mockContent.id)
+        .repository(mockRepository.id || '')
         .delete()
         .then(function (response: EmmlyResponse) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.strictEqual(response.data.id, contentFixture.id)
+          assert.strictEqual(response.data.id, mockContent.id)
 
           done()
         })
@@ -31,10 +33,11 @@ export default () => {
     it("should delete contents by id's via resource", function (done) {
       const client = new EmmlyClient()
       client
-        .content(fixture.imageContentId || '')
-        .repository(repositoryFixture.id || '')
+        .content(mockContent3.id || '')
+        .repository(mockRepository.id || '')
         .delete()
-        .then(() => client.content(contentFixture2.id).delete())
+        .then(() => client.content(mockContent2.id).delete())
+        .then(() => client.content(mockContent4.id).delete())
         .then(function () {
           done()
         })

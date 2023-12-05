@@ -1,9 +1,9 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { workflowFixture } from '../fixtures'
+import { IWorkflow } from '../../src/types/workflow'
 
-export default () => {
+export default (mockWorkflow: IWorkflow) => {
   describe('Emmly delete workflow', function () {
     it('should delete workflow by id', function (done) {
       const client = new EmmlyClient()
@@ -16,7 +16,7 @@ export default () => {
                 }
             }`,
           {
-            workflowId: workflowFixture.id,
+            workflowId: mockWorkflow.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -24,10 +24,7 @@ export default () => {
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.strictEqual(
-            response.data.deleteWorkflow.id,
-            workflowFixture.id,
-          )
+          assert.strictEqual(response.data.deleteWorkflow.id, mockWorkflow.id)
 
           done()
         })

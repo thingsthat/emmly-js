@@ -1,9 +1,8 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse, EmmlyResponseError } from '../../src'
-import { fixture } from '../fixtures'
 
-export default () => {
+export default (mockRevision) => {
   describe('Emmly revisions workflow', function () {
     it('should update revision to next step in workflow', function (done) {
       const client = new EmmlyClient()
@@ -22,7 +21,7 @@ export default () => {
                 }
             }`,
           {
-            revisionId: fixture.revisionId,
+            revisionId: mockRevision.id,
             status: 'published',
           },
         )
@@ -97,7 +96,7 @@ export default () => {
                 }
             }`,
           {
-            revisionId: fixture.revisionId,
+            revisionId: mockRevision.id,
             status: 'blah',
           },
         )

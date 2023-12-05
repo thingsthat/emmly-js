@@ -1,9 +1,10 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { repositoryFixture, workflowFixture } from '../fixtures'
+import { IRepository } from '../../src/types/repository'
+import { IWorkflow } from '../../src/types/workflow'
 
-export default () => {
+export default (mockRepository: IRepository, mockWorkflow: IWorkflow) => {
   describe('Emmly workflows', function () {
     it('should create workflow', function (done) {
       const client = new EmmlyClient()
@@ -17,8 +18,8 @@ export default () => {
                 }
             }`,
           {
-            repositorySlug: repositoryFixture.id,
-            workflow: workflowFixture,
+            repositorySlug: mockRepository.id,
+            workflow: mockWorkflow,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -42,7 +43,7 @@ export default () => {
             'Workflow default should be true',
           )
 
-          workflowFixture.id = response.data.workflow.id
+          mockWorkflow.id = response.data.workflow.id
 
           done()
         })
@@ -50,7 +51,7 @@ export default () => {
     })
 
     it('should update workflow', function (done) {
-      workflowFixture.status['approve'] = {}
+      mockWorkflow.status['approve'] = {}
 
       const client = new EmmlyClient()
       client
@@ -63,8 +64,8 @@ export default () => {
                 }
             }`,
           {
-            repositorySlug: repositoryFixture.id,
-            workflow: workflowFixture,
+            repositorySlug: mockRepository.id,
+            workflow: mockWorkflow,
           },
         )
         .then(function (response: EmmlyResponse) {

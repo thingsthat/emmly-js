@@ -1,9 +1,10 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { modelFixture, repositoryFixture } from '../fixtures'
+import { IModel } from '../../src/types/models'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (mockRepository: IRepository, mockModel: IModel) => {
   describe('Emmly models', function () {
     it('should create model', function (done) {
       const client = new EmmlyClient()
@@ -17,8 +18,8 @@ export default () => {
                             }
                         }`,
           {
-            model: modelFixture,
-            repositorySlug: repositoryFixture.id,
+            model: mockModel,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -26,7 +27,7 @@ export default () => {
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          modelFixture.id = response.data.model.id
+          mockModel.id = response.data.model.id
 
           done()
         })
@@ -35,7 +36,7 @@ export default () => {
 
     it('should update model', function (done) {
       // Add field
-      modelFixture.fields.push({
+      mockModel.fields.push({
         type: 'image',
         name: 'image',
         label: 'Image',
@@ -52,8 +53,8 @@ export default () => {
                             }
                         }`,
           {
-            model: modelFixture,
-            repositorySlug: repositoryFixture.id,
+            model: mockModel,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -84,8 +85,8 @@ export default () => {
                     }
                 }`,
           {
-            model: modelFixture,
-            repositorySlug: repositoryFixture.id,
+            model: mockModel,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {

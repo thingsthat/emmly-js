@@ -1,9 +1,10 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { actionFixture, repositoryFixture } from '../fixtures'
+import { IAction } from '../../src/types/actions'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (mockRepository: IRepository, mockAction: IAction) => {
   describe('Emmly actions', function () {
     it('should create action', function (done) {
       const client = new EmmlyClient()
@@ -18,8 +19,8 @@ export default () => {
                 }
             }`,
           {
-            action: actionFixture,
-            repositorySlug: repositoryFixture.id,
+            action: mockAction,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -27,7 +28,7 @@ export default () => {
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          actionFixture.id = response.data.action.id
+          mockAction.id = response.data.action.id
 
           done()
         })
@@ -35,7 +36,7 @@ export default () => {
     })
 
     it('should update action', function (done) {
-      actionFixture.options.width = 670
+      mockAction.options.width = 670
 
       const client = new EmmlyClient()
       client
@@ -49,8 +50,8 @@ export default () => {
                 }
             }`,
           {
-            action: actionFixture,
-            repositorySlug: repositoryFixture.id,
+            action: mockAction,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {

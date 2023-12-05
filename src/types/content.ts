@@ -9,7 +9,7 @@ export interface IContent {
   authorContributors?: string[]
   createdAt?: Date
   createdBy?: string
-  data?: JSONType
+  data: JSONType
   language?: string
   lastPublishedAt?: Date
   meta?: JSONType

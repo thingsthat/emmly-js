@@ -2,9 +2,10 @@ import { assert } from 'chai'
 import fs from 'fs'
 
 import { EmmlyClient, EmmlyUploader } from '../../src'
-import { fixture, repositoryFixture } from '../fixtures'
+import { IContent } from '../../src/types/content'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (mockRepository: IRepository, mockContent3: IContent) => {
   describe('Emmly content media on default workflow', function () {
     it('should create content media for uploading an image', function (done) {
       const client = new EmmlyClient()
@@ -16,7 +17,7 @@ export default () => {
         'test-small.jpeg',
         fs.readFileSync('./test/media/test-small.jpeg'),
         'image/jpeg',
-        repositoryFixture.id as string,
+        mockRepository.id as string,
         ['defaultmedia'],
       )
 
@@ -49,7 +50,7 @@ export default () => {
         )
 
         // Set content id for later use on another test for actions execute
-        fixture.imageContentId = payload?.content.id
+        mockContent3.id = payload?.content.id
       })
 
       uploader.on('uploading', () => {})
@@ -71,7 +72,7 @@ export default () => {
         'test.jpg',
         fs.readFileSync('./test/media/test.jpg'),
         'image/jpeg',
-        repositoryFixture.id as string,
+        mockRepository.id as string,
         ['defaultmedia'],
       )
 
@@ -121,7 +122,7 @@ export default () => {
         'test.jpg',
         fs.readFileSync('./test/media/test.jpg'),
         'image/jpeg',
-        repositoryFixture.id as string,
+        mockRepository.id as string,
         ['defaultmedia'],
       )
 

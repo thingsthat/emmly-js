@@ -1,13 +1,18 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { contentFixture, fixture, repositoryFixture } from '../fixtures'
+import { IContent } from '../../src/types/content'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (
+  mockRepository: IRepository,
+  mockContent: IContent,
+  mockContent4: IContent,
+  mockRevision,
+) => {
   describe('Emmly content', function () {
     it('should create content', function (done) {
       const client = new EmmlyClient()
-      contentFixture.repository = repositoryFixture.id
 
       client
         .query(
@@ -24,8 +29,8 @@ export default () => {
                 }
             }`,
           {
-            content: contentFixture,
-            repositorySlug: repositoryFixture.name,
+            content: mockContent,
+            repositorySlug: mockRepository.name,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -40,7 +45,7 @@ export default () => {
             'response.data.content.name',
           )
 
-          assert.strictEqual(response.data.content.name, contentFixture.name)
+          assert.strictEqual(response.data.content.name, mockContent.name)
 
           assert.exists(
             response.data.content.revision,
@@ -57,7 +62,32 @@ export default () => {
 
           assert.strictEqual(response.data.content.revision.status, 'draft')
 
-          contentFixture.id = response.data.content.id
+          mockContent.id = response.data.content.id
+
+          done()
+        })
+        .catch(done)
+    })
+
+    it('should create content with resource', function (done) {
+      const client = new EmmlyClient()
+
+      client
+        .content()
+        .repository(mockRepository.name)
+        .push(mockContent4)
+        .then(function (response: EmmlyResponse) {
+          assert.isNotNull(response, 'No response object')
+          assert.exists(response.data, 'Response has no data object')
+          assert.notExists(response.errors, 'Has errors')
+
+          assert.exists(response.data, 'response.data')
+          assert.exists(response.data.id, 'response.data.id')
+          assert.exists(response.data.name, 'response.data.name')
+
+          assert.strictEqual(response.data.name, mockContent4.name)
+
+          mockContent4.id = response.data.id
 
           done()
         })
@@ -66,10 +96,12 @@ export default () => {
 
     it('should update content', function (done) {
       const value = 'test update content'
-      contentFixture.data.test = value
+
+      // TODO: Ideally want to pass model interface here so we have field types in the data structure. JSON works for now.
+      // @ts-ignore
+      mockContent.data.test = value
 
       const client = new EmmlyClient()
-      contentFixture.repository = repositoryFixture.id
 
       client
         .query(
@@ -87,8 +119,8 @@ export default () => {
                 }
             }`,
           {
-            content: contentFixture,
-            repositorySlug: repositoryFixture.id,
+            content: mockContent,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -103,7 +135,7 @@ export default () => {
             'response.data.content.name',
           )
 
-          assert.strictEqual(response.data.content.name, contentFixture.name)
+          assert.strictEqual(response.data.content.name, mockContent.name)
 
           assert.exists(
             response.data.content.revision,
@@ -145,7 +177,7 @@ export default () => {
           )
           assert.strictEqual(response.data.content.revision.status, 'draft')
 
-          fixture.revisionId = response.data.content.revision.id
+          mockRevision.id = response.data.content.revision.id
 
           done()
         })

@@ -1,13 +1,13 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { repositoryFixture } from '../fixtures'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (mockRepository: IRepository) => {
   describe('Emmly repositories update', function () {
     it('should update the repository language', function (done) {
       const client = new EmmlyClient()
-      repositoryFixture.primaryLanguage = 'fr'
+      mockRepository.primaryLanguage = 'fr'
 
       client
         .query(
@@ -19,7 +19,7 @@ export default () => {
                 }
             }`,
           {
-            repository: repositoryFixture,
+            repository: mockRepository,
           },
         )
         .then(function (response: EmmlyResponse) {

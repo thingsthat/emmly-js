@@ -1,9 +1,10 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { contentFixture, repositoryFixture } from '../fixtures'
+import { IContent } from '../../src/types/content'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (mockRepository: IRepository, mockContent: IContent) => {
   describe('Emmly revision queries', function () {
     it('should query all revisions for repository', function (done) {
       const client = new EmmlyClient()
@@ -16,7 +17,7 @@ export default () => {
                 }
             }`,
           {
-            repositorySlug: repositoryFixture.id,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -27,8 +28,8 @@ export default () => {
           assert.exists(response.data.revisions, 'No contents data')
           assert.strictEqual(
             response.data.revisions.length,
-            5,
-            'Revisions length not 5',
+            6,
+            'Revisions length not 6',
           )
 
           done()
@@ -47,8 +48,8 @@ export default () => {
                 }
             }`,
           {
-            contentId: contentFixture.id,
-            repositorySlug: repositoryFixture.id,
+            contentId: mockContent.id,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {

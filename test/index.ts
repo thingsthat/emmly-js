@@ -12,6 +12,15 @@ import contentRevisionsQuery from './content/revisions-query'
 import contentRevisionsWorkflow from './content/revisions-workflow'
 import general from './general'
 import mediaDefault from './media/media-default'
+import {
+  getMockAction,
+  getMockContent,
+  getMockContentEmpty,
+  getMockModel,
+  getMockRepository,
+  getMockRevision,
+  getMockWorkflow,
+} from './mock'
 import modelsCreate from './models/create'
 import modelsDelete from './models/delete'
 import modelsQuery from './models/query'
@@ -21,50 +30,67 @@ import respositoriesUpdate from './respositories/update'
 import workflowCreate from './workflow/create'
 import workflowDelete from './workflow/delete'
 
+const mockRepository = getMockRepository()
+const mockWorkflow = getMockWorkflow()
+const mockModel = getMockModel()
+const mockAction = getMockAction()
+const mockRevision = getMockRevision()
+
+const mockContent = getMockContent(mockRepository)
+const mockContent2 = getMockContent(mockRepository)
+const mockContent3 = getMockContentEmpty()
+const mockContent4 = getMockContent(mockRepository)
+
 dotenv.config()
 
 general()
 
 // Repositories
-respositoriesCreate()
-respositoriesUpdate()
-respositoriesOptions()
+respositoriesCreate(mockRepository)
+respositoriesUpdate(mockRepository)
+respositoriesOptions(mockRepository)
 
 // Models
-modelsCreate()
-modelsQuery()
+modelsCreate(mockRepository, mockModel)
+modelsQuery(mockRepository)
 
 // Content and media with default workflow
-contentDefault()
+contentDefault(mockRepository, mockContent2)
 
 // Actions
-actionsCreate()
+actionsCreate(mockRepository, mockAction)
 
 // Custom workflow
-workflowCreate()
+workflowCreate(mockRepository, mockWorkflow)
 
 // Content with custom workflow
-contentCreate()
+contentCreate(mockRepository, mockContent, mockContent4, mockRevision)
 
 // Revisions with custom workflow
-contentRevisions()
+contentRevisions(mockContent)
 
 // Revisions Workflow
-contentRevisionsWorkflow()
+contentRevisionsWorkflow(mockRevision)
 
 // Content media
-mediaDefault()
+mediaDefault(mockRepository, mockContent3)
 
 // Queries
-contentQuery()
+contentQuery(mockRepository, mockContent)
 
-contentRevisionsQuery()
+contentRevisionsQuery(mockRepository, mockContent)
 
 // Action Execute - Image Resize
-actionsExecute()
+actionsExecute(mockRepository, mockAction, mockContent3)
 
 // Clear up
-contentDelete()
-actionsDelete()
-modelsDelete()
-workflowDelete()
+contentDelete(
+  mockRepository,
+  mockContent,
+  mockContent2,
+  mockContent3,
+  mockContent4,
+)
+actionsDelete(mockAction)
+modelsDelete(mockRepository, mockModel)
+workflowDelete(mockWorkflow)

@@ -1,9 +1,10 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { contentFixture, repositoryFixture } from '../fixtures'
+import { IContent } from '../../src/types/content'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (mockRepository: IRepository, mockContent: IContent) => {
   describe('Emmly content queries', function () {
     it('should query all content for repository', function (done) {
       const client = new EmmlyClient()
@@ -16,7 +17,7 @@ export default () => {
                 }
             }`,
           {
-            repositorySlug: repositoryFixture.id,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -27,8 +28,8 @@ export default () => {
           assert.exists(response.data.contents, 'No contents data')
           assert.strictEqual(
             response.data.contents.length,
-            5,
-            'Content length not 5',
+            6,
+            'Content length not 6',
           )
 
           done()
@@ -47,8 +48,8 @@ export default () => {
                 }
             }`,
           {
-            repositorySlug: repositoryFixture.id,
-            slug: contentFixture.id,
+            repositorySlug: mockRepository.id,
+            slug: mockContent.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -83,7 +84,7 @@ export default () => {
             }`,
           {
             type: 'media',
-            repositorySlug: repositoryFixture.id,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -108,7 +109,7 @@ export default () => {
 
       client
         .content()
-        .repository(repositoryFixture.id || '')
+        .repository(mockRepository.id || '')
         .type('media')
         .fetch('id name')
         .then(function (response: EmmlyResponse) {
@@ -129,8 +130,8 @@ export default () => {
     it('should query content by id', function (done) {
       const client = new EmmlyClient()
       client
-        .content(contentFixture.id)
-        .repository(repositoryFixture.id || '')
+        .content(mockContent.id)
+        .repository(mockRepository.id || '')
         .fetch('id name')
         .then(function (response: EmmlyResponse) {
           assert.isNotNull(response, 'No response object')
@@ -174,7 +175,7 @@ export default () => {
       const client = new EmmlyClient()
       client
         .content()
-        .repository(repositoryFixture.id || '')
+        .repository(mockRepository.id || '')
         .tags('test1')
         .fetch('id name')
         .then(function (response: EmmlyResponse) {
@@ -182,7 +183,7 @@ export default () => {
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.strictEqual(response.data.length, 1, 'Content length not 1')
+          assert.strictEqual(response.data.length, 2, 'Content length not 2')
 
           assert.exists(response.data[0].id, 'response.data.content.id')
           assert.exists(response.data[0].name, 'response.data.content.name')
@@ -196,7 +197,7 @@ export default () => {
       const client = new EmmlyClient()
       client
         .content()
-        .repository(repositoryFixture.id || '')
+        .repository(mockRepository.id || '')
         .tags(['TEST1', 'Test2'])
         .fetch('id name')
         .then(function (response: EmmlyResponse) {
@@ -204,7 +205,7 @@ export default () => {
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.strictEqual(response.data.length, 1, 'Content length not 1')
+          assert.strictEqual(response.data.length, 2, 'Content length not 2')
 
           assert.exists(response.data[0].id, 'response.data.content.id')
           assert.exists(response.data[0].name, 'response.data.content.name')

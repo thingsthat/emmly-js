@@ -1,9 +1,9 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { repositoryFixture } from '../fixtures'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (mockRepository: IRepository) => {
   describe('Emmly repositories', function () {
     it('should query no repositories via resource', function (done) {
       const client = new EmmlyClient()
@@ -32,7 +32,7 @@ export default () => {
                 }
             }`,
           {
-            repository: repositoryFixture,
+            repository: mockRepository,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -55,9 +55,9 @@ export default () => {
 
           assert.equal(response.data.repository.role, 'OWNER')
 
-          assert.equal(response.data.repository.name, repositoryFixture.name)
+          assert.equal(response.data.repository.name, mockRepository.name)
 
-          repositoryFixture.id = response.data.repository.id
+          mockRepository.id = response.data.repository.id
 
           done()
         })

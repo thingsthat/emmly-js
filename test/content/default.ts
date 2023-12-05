@@ -1,13 +1,13 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { contentFixture2, repositoryFixture } from '../fixtures'
+import { IContent } from '../../src/types/content'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (mockRepository: IRepository, mockContent2: IContent) => {
   describe('Emmly content default workflow', function () {
     it('should create default content', function (done) {
       const client = new EmmlyClient()
-      contentFixture2.repository = repositoryFixture.id
 
       client
         .query(
@@ -25,8 +25,8 @@ export default () => {
                 }
             }`,
           {
-            content: contentFixture2,
-            repositorySlug: repositoryFixture.id,
+            content: mockContent2,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -37,14 +37,14 @@ export default () => {
           assert.exists(response.data.content, 'response.data.content')
           assert.exists(response.data.content.id, 'response.data.content.id')
 
-          contentFixture2.id = response.data.content.id
+          mockContent2.id = response.data.content.id
 
           assert.exists(
             response.data.content.name,
             'response.data.content.name',
           )
 
-          assert.strictEqual(response.data.content.name, contentFixture2.name)
+          assert.strictEqual(response.data.content.name, mockContent2.name)
 
           assert.exists(
             response.data.content.revision,
@@ -85,10 +85,12 @@ export default () => {
 
     it('should update default content', function (done) {
       const value = 'test update content'
-      contentFixture2.data.test = value
+
+      // TODO: Ideally want to pass model interface here so we have field types in the data structure. JSON works for now.
+      // @ts-ignore
+      mockContent2.data.test = value
 
       const client = new EmmlyClient()
-      contentFixture2.repository = repositoryFixture.id
 
       client
         .query(
@@ -106,7 +108,7 @@ export default () => {
                 }
             }`,
           {
-            content: contentFixture2,
+            content: mockContent2,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -121,7 +123,7 @@ export default () => {
             'response.data.content.name',
           )
 
-          assert.strictEqual(response.data.content.name, contentFixture2.name)
+          assert.strictEqual(response.data.content.name, mockContent2.name)
 
           assert.exists(
             response.data.content.revision,
@@ -170,7 +172,6 @@ export default () => {
 
     it('should make content public', function (done) {
       const client = new EmmlyClient()
-      contentFixture2.repository = repositoryFixture.id
 
       client
         .query(
@@ -190,7 +191,7 @@ export default () => {
             }`,
           {
             access: 'public',
-            contentId: contentFixture2.id,
+            contentId: mockContent2.id,
             status: 'published',
           },
         )
@@ -208,7 +209,7 @@ export default () => {
             'response.data.contentStatus.id',
           )
 
-          assert.strictEqual(response.data.contentStatus.id, contentFixture2.id)
+          assert.strictEqual(response.data.contentStatus.id, mockContent2.id)
 
           assert.exists(
             response.data.contentStatus.revision,

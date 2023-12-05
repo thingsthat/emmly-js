@@ -1,15 +1,15 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { repositoryFixture } from '../fixtures'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (mockRepository: IRepository) => {
   describe('Emmly models', function () {
     it('should query models via resource', function (done) {
       const client = new EmmlyClient()
       client
         .model()
-        .repository(repositoryFixture.id || '')
+        .repository(mockRepository.id || '')
         .fetch('id')
         .then(function (response: EmmlyResponse) {
           assert.isNotNull(response, 'No responsse object')

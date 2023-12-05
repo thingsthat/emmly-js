@@ -1,9 +1,15 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { actionFixture, fixture, repositoryFixture } from '../fixtures'
+import { IAction } from '../../src/types/actions'
+import { IContent } from '../../src/types/content'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (
+  mockRepository: IRepository,
+  mockAction: IAction,
+  mockContent3: IContent,
+) => {
   describe('Emmly actions execute', function () {
     it('should execute image resize action', function (done) {
       const client = new EmmlyClient()
@@ -16,9 +22,9 @@ export default () => {
                 }
             }`,
           {
-            action: actionFixture.id,
-            contentId: fixture.imageContentId,
-            repositorySlug: repositoryFixture.id,
+            action: mockAction.id,
+            contentId: mockContent3.id,
+            repositorySlug: mockRepository.id,
           },
         )
         .then(function (response: EmmlyResponse) {

@@ -2,15 +2,17 @@ import { assert } from 'chai'
 import * as jsondiffpatch from 'jsondiffpatch'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { contentFixture } from '../fixtures'
+import { IContent } from '../../src/types/content'
 
-export default () => {
+export default (mockContent: IContent) => {
   describe('Emmly revisions', function () {
     it('should create content revision', function (done) {
+      // TODO: Move this into the SDK
+
       // Create delta
       const delta = jsondiffpatch.diff(
-        contentFixture,
-        Object.assign({}, contentFixture, {
+        mockContent,
+        Object.assign({}, mockContent, {
           data: { test: 'test revision content' },
         }),
       )
@@ -27,7 +29,7 @@ export default () => {
                 }
             }`,
           {
-            contentId: contentFixture.id,
+            contentId: mockContent.id,
             delta,
           },
         )

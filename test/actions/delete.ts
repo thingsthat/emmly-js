@@ -1,9 +1,9 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { actionFixture } from '../fixtures'
+import { IAction } from '../../src/types/actions'
 
-export default () => {
+export default (mockAction: IAction) => {
   describe('Emmly delete action', function () {
     it('should delete action by id', function (done) {
       const client = new EmmlyClient()
@@ -16,7 +16,7 @@ export default () => {
                 }
             }`,
           {
-            actionId: actionFixture.id,
+            actionId: mockAction.id,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -24,7 +24,7 @@ export default () => {
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.strictEqual(response.data.deleteAction.id, actionFixture.id)
+          assert.strictEqual(response.data.deleteAction.id, mockAction.id)
 
           done()
         })

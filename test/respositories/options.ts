@@ -1,15 +1,15 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse, EmmlyResponseError } from '../../src'
-import { repositoryFixture } from '../fixtures'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (mockRepository: IRepository) => {
   describe('Emmly repositories options', function () {
     it('should update the repository display name', function (done) {
       const client = new EmmlyClient()
-      const displayName = `${repositoryFixture.name}-display`
-      repositoryFixture.options = {}
-      repositoryFixture.options.displayName = displayName
+      const displayName = `${mockRepository.name}-display`
+      mockRepository.options = {}
+      mockRepository.options.displayName = displayName
 
       client
         .query(
@@ -21,7 +21,7 @@ export default () => {
                 }
             }`,
           {
-            repository: repositoryFixture,
+            repository: mockRepository,
           },
         )
         .then(function (response: EmmlyResponse) {
@@ -37,13 +37,13 @@ export default () => {
             response.data.repository.name,
             'response.data.repository.name',
           )
-          assert.equal(response.data.repository.name, repositoryFixture.name)
+          assert.equal(response.data.repository.name, mockRepository.name)
           assert.equal(
             response.data.repository.options.displayName,
             displayName,
           )
 
-          repositoryFixture.options = response.data.repository.options
+          mockRepository.options = response.data.repository.options
 
           done()
         })
@@ -61,7 +61,7 @@ export default () => {
             }`,
           {
             name: 'repository',
-            repositorySlug: repositoryFixture.id,
+            repositorySlug: mockRepository.id,
             value: {
               enabled: true,
             },
@@ -79,7 +79,7 @@ export default () => {
 
     it('should fail the repository option nooption as that does not exist', function (done) {
       const client = new EmmlyClient()
-      repositoryFixture.options.nooption = 11
+      mockRepository.options.nooption = 11
 
       client
         .query(
@@ -91,7 +91,7 @@ export default () => {
                 }
             }`,
           {
-            repository: repositoryFixture,
+            repository: mockRepository,
           },
         )
         .then(function () {

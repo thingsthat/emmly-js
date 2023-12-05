@@ -1,22 +1,23 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { modelFixture, repositoryFixture } from '../fixtures'
+import { IModel } from '../../src/types/models'
+import { IRepository } from '../../src/types/repository'
 
-export default () => {
+export default (mockRepository: IRepository, mockModel: IModel) => {
   describe('Emmly delete model', function () {
     it('should delete model by id via resource', function (done) {
       const client = new EmmlyClient()
       client
-        .model(modelFixture.id)
-        .repository(repositoryFixture.id || '')
+        .model(mockModel.id)
+        .repository(mockRepository.id || '')
         .delete()
         .then(function (response: EmmlyResponse) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.strictEqual(response.data.id, modelFixture.id)
+          assert.strictEqual(response.data.id, mockModel.id)
 
           done()
         })
