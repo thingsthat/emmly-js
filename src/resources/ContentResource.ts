@@ -93,7 +93,7 @@ export default class ContentResource extends Resource {
 
   async push(
     content: IContent,
-    fields: string | string[],
+    fields: string | string[] = ['id', 'name'],
   ): Promise<EmmlyResponse> {
     const response = await this.client.query(
       `mutation content($repositorySlug: String, $content: JSON!) { 
