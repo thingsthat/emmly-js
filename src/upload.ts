@@ -599,8 +599,8 @@ export class UploadFile {
       // Fiter chunks by what's complete and queue the rest
       const tasks = Object.keys(this.chunks)
         .filter((chunkKey) => !this.chunks[chunkKey].isComplete)
-        .map((chunkKey) =>
-          this.queue?.schedule(() => this.uploadChunk(chunkKey)),
+        .map(
+          (chunkKey) => this.queue?.schedule(() => this.uploadChunk(chunkKey)),
         )
 
       await Promise.all(tasks)
