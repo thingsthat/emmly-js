@@ -2,7 +2,7 @@
 
 This JavaScript SDK is for the Emmly API, so you can easily access content stored in Emmly with your JavaScript applications.
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/thingsthat/emmly-js) [![GitHub license](https://img.shields.io/github/license/thingsthat/emmly-js)](https://github.com/thingsthat/emmly-js/blob/master/LICENSE) ![Release workflow](https://github.com/thingsthat/emmly-js/actions/workflows/main.yml/badge.svg) ![GitHub issues](https://img.shields.io/github/issues/thingsthat/emmly-js)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/thingsthat/emmly-js) [![GitHub license](https://img.shields.io/github/license/thingsthat/emmly-js)](https://github.com/thingsthat/emmly-js/blob/main/LICENCE) ![GitHub issues](https://img.shields.io/github/issues/thingsthat/emmly-js) ![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg) ![Eslint](https://img.shields.io/badge/eslint-3A33D1?style=for-the-badge&logo=eslint&logoColor=white)
 
 ## Installation
 
