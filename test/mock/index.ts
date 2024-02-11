@@ -1,8 +1,10 @@
-import { IAction } from '../../src/types/actions'
-import { IContent } from '../../src/types/content'
-import { IModel } from '../../src/types/models'
-import { IRepository } from '../../src/types/repository'
-import { IWorkflow } from '../../src/types/workflow'
+import {
+  IAction,
+  IContent,
+  IModel,
+  IRepository,
+  IWorkflow,
+} from '../../src/types/emmly'
 
 export const getUniqueMockName = () => new Date().getTime()
 

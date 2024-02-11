@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { IRepository } from '../../src/types/repository'
+import { IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository) => {
   describe('Emmly models', function () {
@@ -17,7 +17,7 @@ export default (mockRepository: IRepository) => {
           assert.notExists(response.errors, 'Has errors')
 
           assert.exists(response.data, 'No models data')
-          assert.strictEqual(response.data.length, 7, 'Model length not 7')
+          assert.strictEqual(response.data.length, 9, 'Model length not 9')
 
           done()
         })

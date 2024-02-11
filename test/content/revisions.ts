@@ -2,7 +2,7 @@ import { assert } from 'chai'
 import * as jsondiffpatch from 'jsondiffpatch'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { IContent } from '../../src/types/content'
+import { IContent } from '../../src/types/emmly'
 
 export default (mockContent: IContent) => {
   describe('Emmly revisions', function () {

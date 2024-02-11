@@ -1,5 +1,5 @@
 import { EmmlyClient, EmmlyResponse } from '..'
-import { IContent } from '../types/content'
+import { IContent } from '../types/emmly'
 
 import Resource from './Resource'
 

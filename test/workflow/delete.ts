@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { IWorkflow } from '../../src/types/workflow'
+import { IWorkflow } from '../../src/types/emmly'
 
 export default (mockWorkflow: IWorkflow) => {
   describe('Emmly delete workflow', function () {

@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { IAction } from '../../src/types/actions'
+import { IAction } from '../../src/types/emmly'
 
 export default (mockAction: IAction) => {
   describe('Emmly delete action', function () {

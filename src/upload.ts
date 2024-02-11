@@ -70,13 +70,13 @@ export class EmmlyUploader {
   /**
    * Adds a file to the uploader.
    *
-   * @param {*} referenceId - The reference key for the file.
-   * @param {*} name - The name of the file.
-   * @param {*} buffer - The buffer of the file.
-   * @param {*} contentType - The content type of the file.
-   * @param {*} repositorySlug - The repository Slug to upload to.
-   * @param {*} actions  - The actions to apply to the file.
-   * @param {*} parentContentId - The optional parent content ID to upload to.
+   * @param {string} referenceId - The reference key for the file.
+   * @param {string} name - The name of the file.
+   * @param {Buffer} buffer - The buffer of the file.
+   * @param {string} contentType - The content type of the file.
+   * @param {string} repositorySlug - The repository Slug to upload to.
+   * @param {string[]} actions  - The actions to apply to the file.
+   * @param {string} parentContentId - The optional parent content ID to upload to.
    */
   addFile(
     referenceId: string,
@@ -328,6 +328,9 @@ export class EmmlyUploader {
   }
 }
 
+/**
+ * Individual file for the uploader.
+ */
 export class UploadFile {
   actions: string[]
   buffer: Buffer
@@ -370,10 +373,12 @@ export class UploadFile {
     this.isComplete = false
   }
 
-  add(key: string, chunk: Chunk) {
-    this.chunks[key] = chunk
-  }
-
+  /**
+   * Add a chunk to the file.
+   *
+   * @param {string} key - The chunk key.
+   * @param {Chunk} chunk - The chunk data to upload once ready.
+   */
   addChunk(key: string, chunk: Chunk) {
     this.chunks[key] = chunk
 
@@ -486,6 +491,10 @@ export class UploadFile {
     await this.upload()
   }
 
+  /**
+   * Upload requests a file upload from the Emmly API and then assigns the individual chunk targets
+   * to the corresponding chunk.
+   */
   async upload() {
     const referenceId = this.referenceId
 
@@ -525,6 +534,11 @@ export class UploadFile {
     await this.uploadChunks()
   }
 
+  /**
+   * Uploads a chunk to the target. We use signed S3 for this, but it could be used for any target.
+   *
+   * @param {string} chunkKey - The chunk key.
+   */
   async uploadChunk(chunkKey: string) {
     const slice = this.buffer.subarray(
       this.chunks[chunkKey].startByte,
@@ -579,6 +593,9 @@ export class UploadFile {
     this.progress()
   }
 
+  /**
+   * Uploads all chunks.
+   */
   async uploadChunks() {
     const referenceId = this.referenceId
 

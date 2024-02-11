@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { IRepository } from '../../src/types/repository'
+import { IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository) => {
   describe('Emmly repositories', function () {

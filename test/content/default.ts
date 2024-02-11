@@ -1,8 +1,7 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { IContent } from '../../src/types/content'
-import { IRepository } from '../../src/types/repository'
+import { IContent, IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository, mockContent2: IContent) => {
   describe('Emmly content default workflow', function () {
@@ -175,8 +174,8 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
 
       client
         .query(
-          `mutation contentStatus($contentId: ID!, $status: String!, $access: String, $options: JSON) { 
-                contentStatus(contentId: $contentId, status: $status, access: $access, options: $options) {
+          `mutation contentStatus($contentId: ID!, $status: String!, $access: String) { 
+                contentStatus(contentId: $contentId, status: $status, access: $access) {
                     id 
                     name
                     data

@@ -2,8 +2,7 @@ import { assert } from 'chai'
 import fs from 'fs'
 
 import { EmmlyClient, EmmlyUploader } from '../../src'
-import { IContent } from '../../src/types/content'
-import { IRepository } from '../../src/types/repository'
+import { IContent, IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository, mockContent3: IContent) => {
   describe('Emmly content media on default workflow', function () {

@@ -1,8 +1,7 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { IModel } from '../../src/types/models'
-import { IRepository } from '../../src/types/repository'
+import { IModel, IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository, mockModel: IModel) => {
   describe('Emmly delete model', function () {

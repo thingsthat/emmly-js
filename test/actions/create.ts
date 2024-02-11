@@ -1,8 +1,7 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { IAction } from '../../src/types/actions'
-import { IRepository } from '../../src/types/repository'
+import { IAction, IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository, mockAction: IAction) => {
   describe('Emmly actions', function () {

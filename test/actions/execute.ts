@@ -1,9 +1,7 @@
 import { assert } from 'chai'
 
 import { EmmlyClient, EmmlyResponse } from '../../src'
-import { IAction } from '../../src/types/actions'
-import { IContent } from '../../src/types/content'
-import { IRepository } from '../../src/types/repository'
+import { IAction, IContent, IRepository } from '../../src/types/emmly'
 
 export default (
   mockRepository: IRepository,
