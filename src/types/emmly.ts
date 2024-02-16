@@ -53,6 +53,7 @@ export interface IContent {
   name?: string
   access?: string
   accessOptions?: JSONType
+  aliases?: string[]
   authorContributors?: string[]
   createdAt?: Date
   createdBy?: string
