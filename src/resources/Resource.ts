@@ -1,4 +1,4 @@
-import { EmmlyClient } from '../client'
+import { EmmlyClient } from '..'
 
 export enum SortDirection {
   ASC = 'ASC',

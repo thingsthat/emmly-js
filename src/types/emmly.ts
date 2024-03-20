@@ -6,7 +6,7 @@ import { JSONType } from './json'
 export interface IRepository {
   id?: string
   name: string
-  options: any
+  options: JSONType
   primaryLanguage: string
   role?: string
 }
@@ -48,7 +48,7 @@ export interface IModel {
  * Content is the primary data structure for where content is stored, with updates
  * stored as a history of changes separated by revision.
  */
-export interface IContent {
+export interface IContent<T = any> {
   type?: string
   id?: string
   name?: string
@@ -58,7 +58,7 @@ export interface IContent {
   authorContributors?: string[]
   createdAt?: Date
   createdBy?: string
-  data: JSONType
+  data: T
   language?: string
   lastPublishedAt?: Date
   meta?: JSONType
@@ -77,8 +77,6 @@ export interface IContent {
 export interface IRevision {
   id?: string
   contentId?: string
-  delta?: {
-    data: any
-  }
+  delta?: any
   status?: string
 }

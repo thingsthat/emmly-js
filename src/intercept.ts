@@ -1,10 +1,12 @@
-import { EmmlyOptions, EmmlyResponse } from './client'
 import { EmmlyResponseError } from './errors/EmmlyResponseError'
+import { EmmlyResponse } from './response'
+
+import { EmmlyOptions } from '.'
 
 type InterceptRequest = {
   error?: EmmlyResponseError
   options: Partial<EmmlyOptions>
-  response?: EmmlyResponse<any>
+  response?: EmmlyResponse<unknown>
   url: string
 }
 

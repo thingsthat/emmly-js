@@ -1,4 +1,5 @@
-import { EmmlyClient, EmmlyResponse } from '..'
+import { EmmlyClient } from '..'
+import { EmmlyResponse } from '../response'
 import { IContent } from '../types/emmly'
 
 import Resource, { SortDirection } from './Resource'

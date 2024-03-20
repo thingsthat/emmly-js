@@ -5,7 +5,7 @@ import axios, {
 } from 'axios'
 import Bottleneck from 'bottleneck'
 
-import { EmmlyClient } from '.'
+import { EmmlyClient, IContent } from '.'
 
 export type UploadEvent =
   | 'cancelled'
@@ -26,7 +26,7 @@ export type UploadEvent =
 
 export type UploadEventPayload = {
   chunks?: { [key: string]: Chunk }
-  content?: any
+  content?: IContent
   error?: Error
   loaded?: number
   maxOffset?: number
@@ -45,6 +45,19 @@ type Chunk = {
   size: number
   startByte: number
   url?: string
+}
+
+interface IUploadTarget {
+  key: string
+  url: string
+}
+
+interface IUpload {
+  chunks: {
+    [key: string]: IUploadTarget
+  }
+  key: string
+  url: string
 }
 
 type UploadEventHandler = (payload?: UploadEventPayload) => void
@@ -344,7 +357,7 @@ export class UploadFile {
   referenceId: string
   repositorySlug: string
   size: number
-  target: any
+  target: IUpload | null
   uploader: EmmlyUploader
 
   constructor(
@@ -355,7 +368,7 @@ export class UploadFile {
     size: number,
     repositorySlug: string,
     contentType: string,
-    actions: any,
+    actions: string[],
     parentContentId?: string,
   ) {
     this.uploader = uploader
@@ -417,7 +430,7 @@ export class UploadFile {
 
     try {
       const { data } = await this.uploader.client.query<{
-        uploadCallback: any
+        uploadCallback: IContent
       }>(
         `query uploadCallback($key: String, $contentType: String!, $name: String!, $repositorySlug: String!, $actions: [String], $chunks: JSON, $parentContentId: ID) { 
                 uploadCallback(key: $key, contentType: $contentType, name: $name, repositorySlug: $repositorySlug, actions: $actions, chunks: $chunks, parentContentId: $parentContentId) {
@@ -431,7 +444,7 @@ export class UploadFile {
           actions: this.actions,
           chunks: this.chunks,
           contentType: this.contentType,
-          key: this.target.key,
+          key: this.target?.key,
           parentContentId: this.parentContentId,
           repositorySlug: this.repositorySlug,
         },
@@ -503,7 +516,7 @@ export class UploadFile {
 
     try {
       const response = await this.uploader.client.query<{
-        upload: any
+        upload: IUpload
       }>(
         `query upload($repositorySlug: String!, $contentType: String!, $chunks: JSON) { 
                     upload(repositorySlug: $repositorySlug, contentType: $contentType, chunks: $chunks) {
@@ -528,7 +541,7 @@ export class UploadFile {
     }
 
     for (const chunkKey in this.chunks) {
-      if (!this.chunks[chunkKey].isComplete) {
+      if (!this.chunks[chunkKey].isComplete && this.target?.chunks[chunkKey]) {
         this.chunks[chunkKey] = Object.assign(
           this.chunks[chunkKey],
           this.target.chunks[chunkKey],
@@ -540,7 +553,7 @@ export class UploadFile {
   }
 
   /**
-   * Uploads a chunk to the target. We use signed S3 for this, but it could be used for any target.
+   * Uploads a chunk to the target. We use signed S3 for this.
    *
    * @param {string} chunkKey - The chunk key.
    */

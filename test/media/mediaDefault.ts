@@ -30,24 +30,24 @@ export default (mockRepository: IRepository, mockContent3: IContent) => {
         assert.strictEqual(payload?.referenceId, 'test-small')
 
         assert.isNotNull(payload?.content, 'No response object')
-        assert.exists(payload?.content.data, 'Has no data')
-        assert.exists(payload?.content.data.versions, 'Has no versions')
+        assert.exists(payload?.content?.data, 'Has no data')
+        assert.exists(payload?.content?.data.versions, 'Has no versions')
 
         assert.exists(
-          payload?.content.data.versions.primary,
+          payload?.content?.data.versions.primary,
           'Has no primary version',
         )
         assert.exists(
-          payload?.content.data.versions.primarywebp,
+          payload?.content?.data.versions.primarywebp,
           'Has no primary webp version',
         )
         assert.exists(
-          payload?.content.data.versions.preview,
+          payload?.content?.data.versions.preview,
           'Has no preview version',
         )
 
         // Set content id for later use on another test for actions execute
-        mockContent3.id = payload?.content.id
+        mockContent3.id = payload?.content?.id
       })
 
       uploader.on('uploading', () => {})
@@ -81,19 +81,19 @@ export default (mockRepository: IRepository, mockContent3: IContent) => {
         assert.strictEqual(payload?.referenceId, 'test')
 
         assert.isNotNull(payload?.content, 'No response object')
-        assert.exists(payload?.content.data, 'Has no data')
-        assert.exists(payload?.content.data.versions, 'Has no versions')
+        assert.exists(payload?.content?.data, 'Has no data')
+        assert.exists(payload?.content?.data.versions, 'Has no versions')
 
         assert.exists(
-          payload?.content.data.versions.primary,
+          payload?.content?.data.versions.primary,
           'Has no primary version',
         )
         assert.exists(
-          payload?.content.data.versions.primarywebp,
+          payload?.content?.data.versions.primarywebp,
           'Has no primary webp version',
         )
         assert.exists(
-          payload?.content.data.versions.preview,
+          payload?.content?.data.versions.preview,
           'Has no preview version',
         )
       })
@@ -127,19 +127,19 @@ export default (mockRepository: IRepository, mockContent3: IContent) => {
         assert.strictEqual(payload?.referenceId, 'test')
 
         assert.isNotNull(payload?.content, 'No response object')
-        assert.exists(payload?.content.data, 'Has no data')
-        assert.exists(payload?.content.data.versions, 'Has no versions')
+        assert.exists(payload?.content?.data, 'Has no data')
+        assert.exists(payload?.content?.data.versions, 'Has no versions')
 
         assert.exists(
-          payload?.content.data.versions.primary,
+          payload?.content?.data.versions.primary,
           'Has no primary version',
         )
         assert.exists(
-          payload?.content.data.versions.primarywebp,
+          payload?.content?.data.versions.primarywebp,
           'Has no primary webp version',
         )
         assert.exists(
-          payload?.content.data.versions.preview,
+          payload?.content?.data.versions.preview,
           'Has no preview version',
         )
       })

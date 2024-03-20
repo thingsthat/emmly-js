@@ -2,6 +2,8 @@ import axios from 'axios'
 
 import { EmmlyUploader } from './upload'
 
+import { EmmlyClient } from './'
+
 jest.mock('axios')
 const mockedAxios = axios as jest.Mocked<typeof axios>
 
@@ -16,7 +18,7 @@ describe('EmmlyUploader', () => {
 
   beforeEach(() => {
     const mockClient = new MockEmmlyClient()
-    uploader = new EmmlyUploader(mockClient as any) // Using the mocked EmmlyClient
+    uploader = new EmmlyUploader(mockClient as EmmlyClient) // Using the mocked EmmlyClient
     fileBuffer = Buffer.from('some file data')
     mockedAxios.put.mockResolvedValue({ status: 200 }) // Mock axios.put response
   })

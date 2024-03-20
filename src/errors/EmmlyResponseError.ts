@@ -1,16 +1,16 @@
-import { EmmlyResponse } from '../client'
+import { EmmlyResponse, EmmlyResponseErrorLine } from '../response'
 
 /**
  * Complex response error.
  */
 export class EmmlyResponseError extends Error {
-  errors: any
+  errors: EmmlyResponseErrorLine[]
   status: number
 
   /**
    * Constructor from response.
    *
-   * @param {EmmlyResponse<any>} response - Response object from API request.
+   * @param {EmmlyResponse} response - Response object from API request.
    */
   constructor(response: EmmlyResponse<any>) {
     const message = getErrorMessage(response)
@@ -22,7 +22,7 @@ export class EmmlyResponseError extends Error {
   }
 }
 
-function getErrorMessage(response: EmmlyResponse<any>) {
+function getErrorMessage(response: EmmlyResponse) {
   // Handle primary message formats
   // TOOD: Handle more than one error, but usually there's one that we can get a message from
   if (
@@ -38,7 +38,7 @@ function getErrorMessage(response: EmmlyResponse<any>) {
   return 'Error'
 }
 
-function getErrorStatus(response: EmmlyResponse<any>) {
+function getErrorStatus(response: EmmlyResponse) {
   if (
     response.errors &&
     response.errors.length > 0 &&

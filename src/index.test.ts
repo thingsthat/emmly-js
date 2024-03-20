@@ -1,4 +1,4 @@
-import { EmmlyClient } from './client'
+import { EmmlyClient } from './'
 
 describe('EmmlyClient buildUrl', () => {
   const client = new EmmlyClient()

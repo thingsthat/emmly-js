@@ -5,6 +5,6 @@ export type Delta = {
 
 export type DeltaOp = {
   type?: 'divider' | 'embed' | 'media'
-  attributes?: any
-  insert: any
+  attributes?: { [key: string]: unknown }
+  insert: unknown
 }

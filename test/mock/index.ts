@@ -22,7 +22,7 @@ export const getMockContentEmpty = (): IContent => {
 export const getMockRepository = (): IRepository => {
   return {
     name: `repository${getUniqueMockName()}`,
-    options: null,
+    options: {},
     primaryLanguage: 'en',
   }
 }

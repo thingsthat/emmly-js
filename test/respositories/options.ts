@@ -41,7 +41,7 @@ export default (mockRepository: IRepository) => {
           )
           assert.equal(response.data.repository.name, mockRepository.name)
           assert.equal(
-            response.data.repository.options.displayName,
+            response.data.repository.options['displayName'],
             displayName,
           )
 
@@ -83,7 +83,7 @@ export default (mockRepository: IRepository) => {
 
     it('should fail the repository option nooption as that does not exist', function (done) {
       const client = new EmmlyClient()
-      mockRepository.options.nooption = 11
+      mockRepository.options['nooption'] = 11
 
       client
         .query<{

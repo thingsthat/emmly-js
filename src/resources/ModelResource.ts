@@ -1,4 +1,5 @@
-import { EmmlyClient, EmmlyResponse, IModel } from '..'
+import { EmmlyClient, IModel } from '..'
+import { EmmlyResponse } from '../response'
 
 import Resource from './Resource'
 

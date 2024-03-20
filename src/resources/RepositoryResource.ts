@@ -1,4 +1,5 @@
-import { EmmlyClient, EmmlyResponse, IRepository } from '..'
+import { EmmlyClient, IRepository } from '..'
+import { EmmlyResponse } from '../response'
 
 import Resource, { SortDirection } from './Resource'
 
