@@ -10,7 +10,7 @@ import RepositoryResource from './resources/RepositoryResource'
 
 // We use this to set the user agent which in turn allows us to track usage of the SDK
 const agentName = 'emmly-js'
-const packageAgentName = `${agentName}-0.9.0`
+const packageAgentName = `${agentName}-0.9.1`
 
 interface DefaultResponseData {
   errors?: {
@@ -190,14 +190,14 @@ export class EmmlyClient {
     return response
   }
 
-  async get(
+  async get<T = any>(
     endpoint: string,
     parameters: RequestParameters,
     options?: Partial<EmmlyOptions>,
-  ): Promise<EmmlyResponse> {
+  ): Promise<EmmlyResponse<T>> {
     const url = this.buildUrl(`${this.url}${endpoint}`, parameters)
 
-    const response = await this.request(
+    const response = await this.request<T>(
       url,
       Object.assign(
         {},
@@ -262,14 +262,14 @@ export class EmmlyClient {
     return response
   }
 
-  async post(
+  async post<T = any>(
     endpoint: string,
     data?: Object,
     options?: Partial<EmmlyOptions>,
-  ): Promise<EmmlyResponse> {
+  ): Promise<EmmlyResponse<T>> {
     const url = this.buildUrl(`${this.url}${endpoint}`)
 
-    const response = await this.request(
+    const response = await this.request<T>(
       url,
       Object.assign(
         {},
@@ -287,17 +287,17 @@ export class EmmlyClient {
     return response
   }
 
-  async put(
+  async put<T = any>(
     endpoint: string,
     parameters: RequestParameters,
     data: any,
     options: Partial<EmmlyOptions>,
-  ): Promise<EmmlyResponse> {
+  ): Promise<EmmlyResponse<T>> {
     this.requiresToken()
 
     const url = this.buildUrl(`${this.url}${endpoint}`, parameters)
 
-    const response = await this.request(
+    const response = await this.request<T>(
       url,
       Object.assign(
         {},
