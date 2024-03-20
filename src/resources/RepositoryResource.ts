@@ -1,6 +1,6 @@
-import { EmmlyClient, EmmlyResponse } from '..'
+import { EmmlyClient, EmmlyResponse, IRepository } from '..'
 
-import Resource from './Resource'
+import Resource, { SortDirection } from './Resource'
 
 /**
  * Repository resource to query and filter repositories.
@@ -13,11 +13,15 @@ export default class RepositoryResource extends Resource {
   /**
    * Fetch repository or repositories if no repository id is set.
    * @param {string | string[]} fields - Repository fields to fetch.
-   * @returns {Promise<EmmlyResponse>} - Response from Emmly.
+   * @returns {Promise<EmmlyResponse<IRepository[]>>} - Response from Emmly.
    */
-  async fetch(fields: string | string[]): Promise<EmmlyResponse> {
+  async fetch(
+    fields: string | string[],
+  ): Promise<EmmlyResponse<IRepository[]>> {
     if (this.variables.slug) {
-      const response = await this.client.query(
+      const response = await this.client.query<{
+        repository: IRepository
+      }>(
         `query repository($slug: String) {
           repository(slug: $slug) {
             ${Array.isArray(fields) ? fields.join(' ') : fields}
@@ -27,12 +31,14 @@ export default class RepositoryResource extends Resource {
       )
 
       return {
-        data: response.data.repository,
+        data: [response.data.repository],
         headers: response.headers,
       }
     }
 
-    const response = await this.client.query(
+    const response = await this.client.query<{
+      repositories: IRepository[]
+    }>(
       `query repositories($sortBy: String, $sortDirection: SortDirection) { 
         repositories(sortBy: $sortBy, sortDirection: $sortDirection) { 
           ${Array.isArray(fields) ? fields.join(' ') : fields}
@@ -72,7 +78,7 @@ export default class RepositoryResource extends Resource {
    * @returns {RepositoryResource} - The RepositoryResource instance.
    */
   sortDown(): RepositoryResource {
-    this.variables.sortDirection = 'DESC'
+    this.variables.sortDirection = SortDirection.DESC
     return this
   }
 
@@ -82,7 +88,7 @@ export default class RepositoryResource extends Resource {
    * @returns {RepositoryResource} - The RepositoryResource instance.
    */
   sortUp(): RepositoryResource {
-    this.variables.sortDirection = 'ASC'
+    this.variables.sortDirection = SortDirection.ASC
     return this
   }
 }

@@ -8,6 +8,7 @@ export interface IRepository {
   name: string
   options: any
   primaryLanguage: string
+  role?: string
 }
 
 /**
@@ -68,7 +69,16 @@ export interface IContent {
   publishedAt?: Date
   publishedCount?: number
   repository?: string
-  revision?: string
+  revision?: IRevision
   tags?: string[]
   updatedAt?: Date
+}
+
+export interface IRevision {
+  id?: string
+  contentId?: string
+  delta?: {
+    data: any
+  }
+  status?: string
 }

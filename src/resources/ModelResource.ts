@@ -1,4 +1,4 @@
-import { EmmlyClient, EmmlyResponse } from '..'
+import { EmmlyClient, EmmlyResponse, IModel } from '..'
 
 import Resource from './Resource'
 
@@ -10,30 +10,11 @@ export default class ModelResource extends Resource {
     super(client)
   }
 
-  async delete(): Promise<EmmlyResponse> {
-    if (!this.variables.slug) {
-      throw new Error('Model ID needs to be supplied before you can delete.')
-    }
-
-    const response = await this.client.query(
-      `mutation deleteModel($slug: String!, $repositorySlug: String) {
-        deleteModel(slug: $slug, repositorySlug: $repositorySlug) {
-          id
-          name
-        }
-      }`,
-      this.variables,
-    )
-
-    return {
-      data: response.data.deleteModel,
-      headers: response.headers,
-    }
-  }
-
-  async fetch(fields: string | string[]): Promise<EmmlyResponse> {
+  async fetch(fields: string | string[]): Promise<EmmlyResponse<IModel[]>> {
     if (this.variables.slug) {
-      const response = await this.client.query(
+      const response = await this.client.query<{
+        model: IModel
+      }>(
         `query model($slug: String!, $repositorySlug: String) {
           model(slug: $slug, repositorySlug: $repositorySlug) {
             ${Array.isArray(fields) ? fields.join(' ') : fields}
@@ -43,12 +24,14 @@ export default class ModelResource extends Resource {
       )
 
       return {
-        data: response.data.model,
+        data: [response.data.model],
         headers: response.headers,
       }
     }
 
-    const response = await this.client.query(
+    const response = await this.client.query<{
+      models: IModel[]
+    }>(
       `query models($repositorySlug: String) {
         models(repositorySlug: $repositorySlug) {
           ${Array.isArray(fields) ? fields.join(' ') : fields}

@@ -12,12 +12,24 @@ import RepositoryResource from './resources/RepositoryResource'
 const agentName = 'emmly-js'
 const packageAgentName = `${agentName}-0.8.9`
 
-export type EmmlyResponse = {
-  data: any
-  errors?: any
+interface DefaultResponseData {
+  errors?: {
+    message?: string
+  }[]
+  message?: string
+}
+
+// Define a standard structure for additional properties of the response
+interface EmmlyResponseMetadata {
+  errors?: any[] // Consider using a more specific type for errors
   headers: { [name: string]: boolean | null | number | string | string[] }
   status?: number
 }
+
+// Define EmmlyResponse to include both the data of type T and the metadata
+export type EmmlyResponse<T = DefaultResponseData> = {
+  data: T
+} & EmmlyResponseMetadata
 
 export type EmmlyOptions = {
   headers: { [name: string]: string }
@@ -104,9 +116,12 @@ export class EmmlyClient {
     }
   }
 
-  private createEmmlyResponse(axiosResponse: AxiosResponse) {
-    const emmlyResponse: EmmlyResponse = {
-      data: axiosResponse.data,
+  private createEmmlyResponse<T>(
+    axiosResponse: AxiosResponse,
+  ): EmmlyResponse<T> {
+    const emmlyResponse: EmmlyResponse<T> = {
+      data: axiosResponse.data.data || axiosResponse.data,
+      errors: axiosResponse.data.errors,
       headers: {},
       status: axiosResponse.status,
     }
@@ -213,7 +228,7 @@ export class EmmlyClient {
    * @param {string} url - The URL of the request being made.
    * @param {EmmlyResponse} response - The EmmlyResponse response.
    */
-  logDebug(method: string, url: string, response: EmmlyResponse) {
+  logDebug(method: string, url: string, response: EmmlyResponse<any>) {
     if (this.debug) {
       console.log(agentName, 'method', method)
       console.log(agentName, 'url', url)
@@ -226,8 +241,16 @@ export class EmmlyClient {
    *
    * @returns {Promise<EmmlyResponse>} A Promise that resolves to an EmmlyResponse object.
    */
-  async ping(): Promise<EmmlyResponse> {
-    const response = await this.request(
+  async ping(): Promise<
+    EmmlyResponse<{
+      name: string
+      version: string
+    }>
+  > {
+    const response = await this.request<{
+      name: string
+      version: string
+    }>(
       `${this.url}/ping`,
       Object.assign(this.options, {
         method: 'GET',
@@ -293,14 +316,14 @@ export class EmmlyClient {
   }
 
   // Main queries
-  async query(
+  async query<T = any>(
     query: string,
     variables?: QueryVeriables,
     path = '/query',
-  ): Promise<EmmlyResponse> {
+  ): Promise<EmmlyResponse<T>> {
     const url = this.buildUrl(`${this.url}${path}`)
 
-    const response = await this.request(
+    const response = await this.request<T>(
       url,
       Object.assign({}, this.options, {
         data: {
@@ -310,23 +333,19 @@ export class EmmlyClient {
         method: 'POST',
       }),
     )
-
-    if (response && response.data.errors && response.data.errors.length > 0) {
+    if (response.errors && response.errors.length > 0) {
       throw new EmmlyResponseError(response)
     }
-
-    // Tidy up a little
-    response.data = response.data.data
 
     this.logDebug('POST', url, response)
 
     return response
   }
 
-  async request(
+  async request<T = any>(
     url: string,
     options: Partial<EmmlyOptions>,
-  ): Promise<EmmlyResponse> {
+  ): Promise<EmmlyResponse<T>> {
     // Simple timeout
     const timeoutTimer = setTimeout(() => {
       throw new Error('Request timed out')
@@ -342,7 +361,7 @@ export class EmmlyClient {
       clearTimeout(timeoutTimer)
 
       // Clean emmly response
-      const cleanResponse = this.createEmmlyResponse(response)
+      const cleanResponse = this.createEmmlyResponse<T>(response)
 
       if (response.status >= 400) {
         throw new EmmlyResponseError(cleanResponse)
@@ -356,21 +375,21 @@ export class EmmlyClient {
       }
 
       return cleanResponse
-    } catch (error_) {
+    } catch (error) {
       clearTimeout(timeoutTimer)
 
-      if ('response' in error_) {
-        const error = new EmmlyResponseError({
-          data: error_.response.data,
-          headers: error_.response.headers,
-          status: error_.response.status,
+      if ('response' in error) {
+        const responseError = new EmmlyResponseError({
+          data: error.response.data,
+          headers: error.response.headers,
+          status: error.response.status,
         })
 
         // Dispatch rejected intercepters
-        this.interceptors.rejected.each({ error, options, url })
+        this.interceptors.rejected.each({ error: responseError, options, url })
       }
 
-      throw error_
+      throw error
     }
   }
 

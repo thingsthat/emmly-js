@@ -1,6 +1,6 @@
 import { assert } from 'chai'
 
-import { EmmlyClient, EmmlyResponse } from '../src'
+import { EmmlyClient } from '../src'
 
 export default () => {
   describe('Emmly', function () {
@@ -8,7 +8,7 @@ export default () => {
       const client = new EmmlyClient()
       client
         .ping()
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.exists(response.data.name)
           assert.exists(response.data.version)
 

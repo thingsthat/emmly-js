@@ -1,5 +1,10 @@
 import { EmmlyClient } from '../client'
 
+export enum SortDirection {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
 /**
  * Resource base class for the resources.
  */
@@ -18,7 +23,7 @@ export default class Resource {
     repositorySlug?: string
     slug?: string
     sortBy?: string
-    sortDirection?: 'ASC' | 'DESC'
+    sortDirection?: SortDirection
     status?: string | string[]
     tags?: string | string[]
   }

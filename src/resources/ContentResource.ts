@@ -1,7 +1,7 @@
 import { EmmlyClient, EmmlyResponse } from '..'
 import { IContent } from '../types/emmly'
 
-import Resource from './Resource'
+import Resource, { SortDirection } from './Resource'
 
 /**
  * Content resource to query and filter content.
@@ -23,17 +23,19 @@ export default class ContentResource extends Resource {
 
   /**
    * Deletes the content.
-   * @returns {Promise<EmmlyResponse>} Returns the API EmmlyResponse.
+   * @returns {Promise<EmmlyResponse<IContent>>} Returns the API EmmlyResponse.
    * @throws {Error} - If the content slug is not supplied.
    */
-  async delete(): Promise<EmmlyResponse> {
+  async delete(): Promise<EmmlyResponse<IContent>> {
     if (!this.variables.slug) {
       throw new Error(
         'Content slug needs to be supplied before you can delete.',
       )
     }
 
-    const response = await this.client.query(
+    const response = await this.client.query<{
+      deleteContent: IContent
+    }>(
       `mutation deleteContent($slug: String!, $repositorySlug: String) {
         deleteContent(slug: $slug, repositorySlug: $repositorySlug) {
           id
@@ -52,11 +54,13 @@ export default class ContentResource extends Resource {
   /**
    * Fetches the content.
    * @param {string|string[]} fields - The fields to fetch.
-   * @returns {Promise<EmmlyResponse>} Returns the API EmmlyResponse.
+   * @returns {Promise<EmmlyResponse<IContent[]>>} Returns the API EmmlyResponse.
    */
-  async fetch(fields: string | string[]): Promise<EmmlyResponse> {
+  async fetch(fields: string | string[]): Promise<EmmlyResponse<IContent[]>> {
     if (this.variables.slug) {
-      const response = await this.client.query(
+      const response = await this.client.query<{
+        content: IContent
+      }>(
         `query content($slug: String!, $repositorySlug: String, $type: String) {
           content(slug: $slug, repositorySlug: $repositorySlug, type: $type) {
             ${Array.isArray(fields) ? fields.join(' ') : fields}
@@ -66,12 +70,14 @@ export default class ContentResource extends Resource {
       )
 
       return {
-        data: response.data.content,
+        data: [response.data.content],
         headers: response.headers,
       }
     }
 
-    const response = await this.client.query(
+    const response = await this.client.query<{
+      contents: IContent[]
+    }>(
       `query contents($repositorySlug: String, $personId: ID, $sortBy: String, $sortDirection: SortDirection, $pageSize: Int, $page: Int, $type: [String], $status: [String], $published: Boolean, $tags: [String]){
         contents(repositorySlug: $repositorySlug, personId: $personId, sortBy: $sortBy, sortDirection: $sortDirection, pageSize: $pageSize, page: $page, type: $type, status: $status, published: $published, tags: $tags) {
           ${Array.isArray(fields) ? fields.join(' ') : fields}
@@ -129,13 +135,15 @@ export default class ContentResource extends Resource {
    * Pushes the content to Emmly.
    * @param {IContent} content - The content to push.
    * @param {string|string[]} fields - The fields to fetch.
-   * @returns {Promise<EmmlyResponse>} A promise that resolves to the EmmlyResponse.
+   * @returns {Promise<EmmlyResponse<IContent>>} A promise that resolves to the EmmlyResponse.
    */
   async push(
     content: IContent,
     fields: string | string[] = ['id', 'name'],
-  ): Promise<EmmlyResponse> {
-    const response = await this.client.query(
+  ): Promise<EmmlyResponse<IContent>> {
+    const response = await this.client.query<{
+      content: IContent
+    }>(
       `mutation content($repositorySlug: String, $content: JSON!) { 
         content(repositorySlug: $repositorySlug, content: $content) {
           ${Array.isArray(fields) ? fields.join(' ') : fields}
@@ -178,7 +186,7 @@ export default class ContentResource extends Resource {
    * @returns {ContentResource} The ContentResource instance.
    */
   sortDown(): ContentResource {
-    this.variables.sortDirection = 'DESC'
+    this.variables.sortDirection = SortDirection.DESC
     return this
   }
 
@@ -187,7 +195,7 @@ export default class ContentResource extends Resource {
    * @returns {ContentResource} The ContentResource instance.
    */
   sortUp(): ContentResource {
-    this.variables.sortDirection = 'ASC'
+    this.variables.sortDirection = SortDirection.ASC
     return this
   }
 

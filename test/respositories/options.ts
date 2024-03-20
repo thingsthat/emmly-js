@@ -1,6 +1,6 @@
 import { assert } from 'chai'
 
-import { EmmlyClient, EmmlyResponse, EmmlyResponseError } from '../../src'
+import { EmmlyClient } from '../../src'
 import { IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository) => {
@@ -12,7 +12,9 @@ export default (mockRepository: IRepository) => {
       mockRepository.options.displayName = displayName
 
       client
-        .query(
+        .query<{
+          repository: IRepository
+        }>(
           `mutation repository($repository: JSON!) { 
                 repository(repository: $repository) {
                     id
@@ -24,7 +26,7 @@ export default (mockRepository: IRepository) => {
             repository: mockRepository,
           },
         )
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
@@ -53,7 +55,9 @@ export default (mockRepository: IRepository) => {
     it('should update the repository option for the addon', function (done) {
       const client = new EmmlyClient()
       client
-        .query(
+        .query<{
+          repositoryOption: IRepository
+        }>(
           `mutation repositoryOption($repositorySlug: String!, $name: String!, $value: JSON!) { 
                 repositoryOption(repositorySlug: $repositorySlug, name: $name, value: $value) {
                     options
@@ -67,7 +71,7 @@ export default (mockRepository: IRepository) => {
             },
           },
         )
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
@@ -82,7 +86,9 @@ export default (mockRepository: IRepository) => {
       mockRepository.options.nooption = 11
 
       client
-        .query(
+        .query<{
+          repository: IRepository
+        }>(
           `mutation repository($repository: JSON!) { 
                 repository(repository: $repository) {
                     id
@@ -97,7 +103,7 @@ export default (mockRepository: IRepository) => {
         .then(function () {
           assert.fail('Expected 400 query exception not thrown')
         })
-        .catch(function (error: EmmlyResponseError) {
+        .catch(function (error) {
           assert.isNotNull(error, 'No error object')
           assert.exists(error.errors, 'error has no errors')
 

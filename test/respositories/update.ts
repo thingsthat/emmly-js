@@ -1,6 +1,6 @@
 import { assert } from 'chai'
 
-import { EmmlyClient, EmmlyResponse } from '../../src'
+import { EmmlyClient } from '../../src'
 import { IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository) => {
@@ -10,7 +10,9 @@ export default (mockRepository: IRepository) => {
       mockRepository.primaryLanguage = 'fr'
 
       client
-        .query(
+        .query<{
+          repository: IRepository
+        }>(
           `mutation repository($repository: JSON!) { 
                 repository(repository: $repository) {
                     id
@@ -22,7 +24,7 @@ export default (mockRepository: IRepository) => {
             repository: mockRepository,
           },
         )
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')

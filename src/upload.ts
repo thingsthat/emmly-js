@@ -416,7 +416,9 @@ export class UploadFile {
     const referenceId = this.referenceId
 
     try {
-      const { data } = await this.uploader.client.query(
+      const { data } = await this.uploader.client.query<{
+        uploadCallback: any
+      }>(
         `query uploadCallback($key: String, $contentType: String!, $name: String!, $repositorySlug: String!, $actions: [String], $chunks: JSON, $parentContentId: ID) { 
                 uploadCallback(key: $key, contentType: $contentType, name: $name, repositorySlug: $repositorySlug, actions: $actions, chunks: $chunks, parentContentId: $parentContentId) {
                             id
@@ -500,7 +502,9 @@ export class UploadFile {
     const referenceId = this.referenceId
 
     try {
-      const response = await this.uploader.client.query(
+      const response = await this.uploader.client.query<{
+        upload: any
+      }>(
         `query upload($repositorySlug: String!, $contentType: String!, $chunks: JSON) { 
                     upload(repositorySlug: $repositorySlug, contentType: $contentType, chunks: $chunks) {
                             url

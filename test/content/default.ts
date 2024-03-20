@@ -1,6 +1,6 @@
 import { assert } from 'chai'
 
-import { EmmlyClient, EmmlyResponse } from '../../src'
+import { EmmlyClient } from '../../src'
 import { IContent, IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository, mockContent2: IContent) => {
@@ -9,7 +9,9 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
       const client = new EmmlyClient()
 
       client
-        .query(
+        .query<{
+          content: IContent
+        }>(
           `mutation content($repositorySlug: String, $content: JSON!) { 
                 content(repositorySlug: $repositorySlug, content: $content) {
                     id 
@@ -28,7 +30,7 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
             repositorySlug: mockRepository.id,
           },
         )
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
@@ -50,32 +52,32 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
             'response.data.content.revision',
           )
           assert.exists(
-            response.data.content.revision.id,
+            response.data.content.revision?.id,
             'response.data.content.revision.id',
           )
           assert.exists(
-            response.data.content.revision.status,
+            response.data.content.revision?.status,
             'response.data.content.revision.status',
           )
           assert.exists(
-            response.data.content.revision.delta,
+            response.data.content.revision?.delta,
             'response.data.content.revision.delta',
           )
           assert.exists(
-            response.data.content.revision.delta.data,
+            response.data.content.revision?.delta?.data,
             'response.data.content.revision.delta.data',
           )
 
           assert.strictEqual(
-            response.data.content.revision.delta.data.length,
+            response.data.content.revision?.delta?.data.length,
             1,
           )
           assert.equal(
-            response.data.content.revision.delta.data[0].test,
+            response.data.content.revision?.delta?.data[0].test,
             'test',
           )
 
-          assert.strictEqual(response.data.content.revision.status, 'draft')
+          assert.strictEqual(response.data.content.revision?.status, 'draft')
 
           done()
         })
@@ -92,7 +94,9 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
       const client = new EmmlyClient()
 
       client
-        .query(
+        .query<{
+          content: IContent
+        }>(
           `mutation content($content: JSON!) { 
                 content(content: $content) {
                     id 
@@ -110,7 +114,7 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
             content: mockContent2,
           },
         )
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
@@ -129,40 +133,40 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
             'response.data.content.revision',
           )
           assert.exists(
-            response.data.content.revision.id,
+            response.data.content.revision?.id,
             'response.data.content.revision.id',
           )
           assert.exists(
-            response.data.content.revision.status,
+            response.data.content.revision?.status,
             'response.data.content.revision.status',
           )
           assert.exists(
-            response.data.content.revision.contentId,
+            response.data.content.revision?.contentId,
             'response.data.content.revision.contentId',
           )
           assert.exists(
-            response.data.content.revision.delta,
+            response.data.content.revision?.delta,
             'response.data.content.revision.delta',
           )
           assert.exists(
-            response.data.content.revision.delta.data,
+            response.data.content.revision?.delta?.data,
             'response.data.content.revision.delta.data',
           )
 
           assert.strictEqual(
-            Object.keys(response.data.content.revision.delta.data).length,
+            Object.keys(response.data.content.revision?.delta?.data).length,
             1,
           )
           assert.equal(
-            response.data.content.revision.delta.data.test[0],
+            response.data.content.revision?.delta?.data.test[0],
             'test update content',
           )
 
           assert.strictEqual(
-            response.data.content.revision.contentId,
+            response.data.content.revision?.contentId,
             response.data.content.id,
           )
-          assert.strictEqual(response.data.content.revision.status, 'draft')
+          assert.strictEqual(response.data.content.revision?.status, 'draft')
 
           done()
         })
@@ -173,7 +177,9 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
       const client = new EmmlyClient()
 
       client
-        .query(
+        .query<{
+          contentStatus: IContent
+        }>(
           `mutation contentStatus($contentId: ID!, $status: String!, $access: String) { 
                 contentStatus(contentId: $contentId, status: $status, access: $access) {
                     id 
@@ -194,7 +200,7 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
             status: 'published',
           },
         )
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
@@ -215,32 +221,32 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
             'response.data.contentStatus.revision',
           )
           assert.exists(
-            response.data.contentStatus.revision.id,
+            response.data.contentStatus.revision?.id,
             'response.data.contentStatus.revision.id',
           )
           assert.exists(
-            response.data.contentStatus.revision.status,
+            response.data.contentStatus.revision?.status,
             'response.data.contentStatus.revision.status',
           )
           assert.exists(
-            response.data.contentStatus.revision.contentId,
+            response.data.contentStatus.revision?.contentId,
             'response.data.contentStatus.revision.contentId',
           )
           assert.exists(
-            response.data.contentStatus.revision.delta,
+            response.data.contentStatus.revision?.delta,
             'response.data.contentStatus.revision.delta',
           )
           assert.exists(
-            response.data.contentStatus.revision.delta.data,
+            response.data.contentStatus.revision?.delta?.data,
             'response.data.contentStatus.revision.delta.data',
           )
 
           assert.strictEqual(
-            response.data.contentStatus.revision.contentId,
+            response.data.contentStatus.revision?.contentId,
             response.data.contentStatus.id,
           )
           assert.strictEqual(
-            response.data.contentStatus.revision.status,
+            response.data.contentStatus.revision?.status,
             'published',
           )
 

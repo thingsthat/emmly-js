@@ -1,6 +1,6 @@
 import { assert } from 'chai'
 
-import { EmmlyClient, EmmlyResponse } from '../../src'
+import { EmmlyClient } from '../../src'
 import { IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository) => {
@@ -11,7 +11,7 @@ export default (mockRepository: IRepository) => {
         .model()
         .repository(mockRepository.id || '')
         .fetch('id')
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No responsse object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')

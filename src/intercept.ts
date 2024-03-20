@@ -4,7 +4,7 @@ import { EmmlyResponseError } from './errors/EmmlyResponseError'
 type InterceptRequest = {
   error?: EmmlyResponseError
   options: Partial<EmmlyOptions>
-  response?: EmmlyResponse
+  response?: EmmlyResponse<any>
   url: string
 }
 

@@ -1,6 +1,6 @@
 import { assert } from 'chai'
 
-import { EmmlyClient, EmmlyResponse } from '../../src'
+import { EmmlyClient } from '../../src'
 import { IContent, IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository, mockContent: IContent) => {
@@ -8,7 +8,9 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
     it('should query all content for repository', function (done) {
       const client = new EmmlyClient()
       client
-        .query(
+        .query<{
+          contents: IContent[]
+        }>(
           `query contents($repositorySlug: String!) {
                 contents(repositorySlug: $repositorySlug) {
                     id
@@ -19,7 +21,7 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
             repositorySlug: mockRepository.id,
           },
         )
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
@@ -39,7 +41,9 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
     it('should query content by id', function (done) {
       const client = new EmmlyClient()
       client
-        .query(
+        .query<{
+          content: IContent
+        }>(
           `query content($slug: String!, $repositorySlug: String) {
                 content(slug: $slug, repositorySlug: $repositorySlug) {
                     id
@@ -51,7 +55,7 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
             slug: mockContent.id,
           },
         )
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
@@ -71,7 +75,9 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
     it('should query content by media type', function (done) {
       const client = new EmmlyClient()
       client
-        .query(
+        .query<{
+          contents: IContent[]
+        }>(
           `query contents($repositorySlug: String!, $type: [String]) {
                 contents(repositorySlug: $repositorySlug, type: $type) {
                     id
@@ -83,7 +89,7 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
             repositorySlug: mockRepository.id,
           },
         )
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
@@ -108,7 +114,7 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
         .repository(mockRepository.id || '')
         .type('media')
         .fetch('id name')
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
@@ -129,43 +135,20 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
         .content(mockContent.id)
         .repository(mockRepository.id || '')
         .fetch('id name')
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.exists(response.data.id, 'response.data.id')
-          assert.exists(response.data.name, 'response.data.name')
+          assert.strictEqual(response.data.length, 1, 'Content length not 1')
+
+          assert.exists(response.data[0].id, 'response.data.id')
+          assert.exists(response.data[0].name, 'response.data.name')
 
           done()
         })
         .catch(done)
     })
-
-    // TODO: Add multi repository access test
-    /*it('should fail to query content by id with no access', function(done) {
-
-      const client = new EmmlyClient()
-      client.content('65614607-4668-4586-a46c-3473c753c0a1').fetch('id name')
-          .then(function(response: any) {
-
-            assert.fail('Expected 403 query exception not thrown')
-
-
-          })
-          .catch(function(e: any) {
-
-            assert.isNotNull(e, 'No error object')
-            assert.exists(e.errors, 'Has no errors')
-
-            assert.strictEqual(e.status, 401, 'Exception status not 401')
-            assert.equal(e.message, 'Bad authentication. Auth key required.')
-
-            done()
-
-          })
-
-    })*/
 
     it('should query content by tag via resource', function (done) {
       const client = new EmmlyClient()
@@ -174,7 +157,7 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
         .repository(mockRepository.id || '')
         .tags('test1')
         .fetch('id name')
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
@@ -196,7 +179,7 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
         .repository(mockRepository.id || '')
         .tags(['TEST1', 'Test2'])
         .fetch('id name')
-        .then(function (response: EmmlyResponse) {
+        .then(function (response) {
           assert.isNotNull(response, 'No response object')
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
