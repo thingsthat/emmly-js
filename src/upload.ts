@@ -165,7 +165,9 @@ export class EmmlyUploader {
    * @param {UploadEventPayload} data - The data to emit with the event.
    */
   emit(event: UploadEvent, data?: UploadEventPayload) {
-    this.events[event]?.forEach((handler) => handler(data))
+    for (const handler of this.events[event] ?? []) {
+      handler(data)
+    }
   }
 
   /**

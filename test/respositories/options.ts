@@ -97,14 +97,14 @@ export default (mockRepository: IRepository) => {
         .then(function () {
           assert.fail('Expected 400 query exception not thrown')
         })
-        .catch(function (e: EmmlyResponseError) {
-          assert.isNotNull(e, 'No error object')
-          assert.exists(e.errors, 'error has no errors')
+        .catch(function (error: EmmlyResponseError) {
+          assert.isNotNull(error, 'No error object')
+          assert.exists(error.errors, 'error has no errors')
 
-          assert.exists(e.errors[0], 'e.errors[0]')
-          assert.exists(e.errors[0].status, 'e.errors[0].status')
+          assert.exists(error.errors[0], 'e.errors[0]')
+          assert.exists(error.errors[0].status, 'e.errors[0].status')
 
-          assert.strictEqual(e.errors[0].status, 400)
+          assert.strictEqual(error.errors[0].status, 400)
 
           done()
         })

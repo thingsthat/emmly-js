@@ -8,6 +8,6 @@ export const calcReadingTime = (text: string): number => {
   const wordsPerMinute = 200 // Average case.
   text = text.trim().replace(/\s+/g, ' ') // Trims and replaces multiple spaces with a single space
 
-  const wordCount = text.split(' ').filter((word) => word).length // Splits by spaces and filters out empty strings
+  const wordCount = text.split(' ').filter(Boolean).length // Splits by spaces and filters out empty strings
   return wordCount > 0 ? Math.ceil(wordCount / wordsPerMinute) : 1
 }

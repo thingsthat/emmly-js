@@ -1,6 +1,6 @@
 import { IContent, IRepository } from '../../src/types/emmly'
 
-export const getUniqueMockName = () => new Date().getTime()
+export const getUniqueMockName = () => Date.now()
 
 export const getMockContent = (mockRepository: IRepository): IContent => {
   return {

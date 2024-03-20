@@ -1,5 +1,5 @@
 import { assert } from 'chai'
-import fs from 'fs'
+import fs from 'node:fs'
 
 import { EmmlyClient, EmmlyUploader } from '../../src'
 import { IContent, IRepository } from '../../src/types/emmly'

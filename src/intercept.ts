@@ -18,7 +18,7 @@ export class Interceptors {
     this.handlers = []
   }
 
-  forEach(value: InterceptRequest) {
+  each(value: InterceptRequest) {
     for (const handler of this.handlers) {
       handler(value)
     }

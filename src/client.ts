@@ -10,7 +10,7 @@ import RepositoryResource from './resources/RepositoryResource'
 
 // We use this to set the user agent which in turn allows us to track usage of the SDK
 const agentName = 'emmly-js'
-const packageAgentName = `${agentName}-0.5.4`
+const packageAgentName = `${agentName}-0.8.9`
 
 export type EmmlyResponse = {
   data: any
@@ -29,7 +29,7 @@ type QueryVeriables = {
   [key: string]: any | boolean | null | number | string | undefined
 }
 
-type RequestParams = {
+type RequestParameters = {
   [key: string]: boolean | number | string
 }
 
@@ -104,7 +104,7 @@ export class EmmlyClient {
     }
   }
 
-  private createEmmlyResponse(axiosResponse: AxiosResponse<any, any>) {
+  private createEmmlyResponse(axiosResponse: AxiosResponse) {
     const emmlyResponse: EmmlyResponse = {
       data: axiosResponse.data,
       headers: {},
@@ -112,9 +112,9 @@ export class EmmlyClient {
     }
 
     // Iterate over Axios response headers and assign them to emmlyResponse.headers
-    Object.entries(axiosResponse.headers).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(axiosResponse.headers)) {
       emmlyResponse.headers[key] = value
-    })
+    }
 
     return emmlyResponse
   }
@@ -132,18 +132,18 @@ export class EmmlyClient {
    * Build URL by appending query parameters to it.
    *
    * @param {string} url - Base URL of the request.
-   * @param {RequestParams} [params] - Optional key-value pairs representing the query parameters to be appended to the URL.
+   * @param {RequestParameters} parameters - Optional key-value pairs representing the query parameters to be appended to the URL.
    * @returns {string} Built url.
    */
-  buildUrl(url: string, params?: RequestParams): string {
-    if (params && Object.keys(params).length > 0) {
+  buildUrl(url: string, parameters?: RequestParameters): string {
+    if (parameters && Object.keys(parameters).length > 0) {
       // Construct URLSearchParams directly from params
-      const searchParams = new URLSearchParams(
-        Object.entries(params).map(([key, value]) => [key, String(value)]),
+      const searchParameters = new URLSearchParams(
+        Object.entries(parameters).map(([key, value]) => [key, String(value)]),
       ).toString()
 
       // Simplify appending query string to URL
-      return url + (url.includes('?') ? '&' : '?') + searchParams
+      return url + (url.includes('?') ? '&' : '?') + searchParameters
     }
 
     return url
@@ -151,12 +151,12 @@ export class EmmlyClient {
 
   async delete(
     endpoint: string,
-    params: RequestParams,
+    parameters: RequestParameters,
     options: Partial<EmmlyOptions>,
   ): Promise<EmmlyResponse> {
     this.requiresToken()
 
-    const url = this.buildUrl(`${this.url}${endpoint}`, params)
+    const url = this.buildUrl(`${this.url}${endpoint}`, parameters)
 
     const response = await this.request(
       url,
@@ -177,10 +177,10 @@ export class EmmlyClient {
 
   async get(
     endpoint: string,
-    params: RequestParams,
+    parameters: RequestParameters,
     options?: Partial<EmmlyOptions>,
   ): Promise<EmmlyResponse> {
-    const url = this.buildUrl(`${this.url}${endpoint}`, params)
+    const url = this.buildUrl(`${this.url}${endpoint}`, parameters)
 
     const response = await this.request(
       url,
@@ -266,13 +266,13 @@ export class EmmlyClient {
 
   async put(
     endpoint: string,
-    params: RequestParams,
+    parameters: RequestParameters,
     data: any,
     options: Partial<EmmlyOptions>,
   ): Promise<EmmlyResponse> {
     this.requiresToken()
 
-    const url = this.buildUrl(`${this.url}${endpoint}`, params)
+    const url = this.buildUrl(`${this.url}${endpoint}`, parameters)
 
     const response = await this.request(
       url,
@@ -334,7 +334,7 @@ export class EmmlyClient {
 
     try {
       // Request options intercepters
-      this.interceptors.request.forEach({ options, url })
+      this.interceptors.request.each({ options, url })
 
       // Make response
       const response = await axios(url, options)
@@ -348,7 +348,7 @@ export class EmmlyClient {
         throw new EmmlyResponseError(cleanResponse)
       } else {
         // Dispatch fulfilled intercepters
-        this.interceptors.fulfilled.forEach({
+        this.interceptors.fulfilled.each({
           options,
           response: cleanResponse,
           url,
@@ -356,21 +356,21 @@ export class EmmlyClient {
       }
 
       return cleanResponse
-    } catch (err) {
+    } catch (error_) {
       clearTimeout(timeoutTimer)
 
-      if ('response' in err) {
+      if ('response' in error_) {
         const error = new EmmlyResponseError({
-          data: err.response.data,
-          headers: err.response.headers,
-          status: err.response.status,
+          data: error_.response.data,
+          headers: error_.response.headers,
+          status: error_.response.status,
         })
 
         // Dispatch rejected intercepters
-        this.interceptors.rejected.forEach({ error, options, url })
+        this.interceptors.rejected.each({ error, options, url })
       }
 
-      throw err
+      throw error_
     }
   }
 
@@ -391,6 +391,10 @@ export class EmmlyClient {
     this.options.headers[name] = value
   }
 
+  /**
+   * Set timeout to be used in seconds.
+   * @param {number} timeout - The number of seconds.
+   */
   setTimeout(timeout: number) {
     this.options.timeout = timeout
   }
