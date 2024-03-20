@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
 import { EmmlyResponseError } from './errors/EmmlyResponseError'
 import { Interceptors } from './intercept'
@@ -15,7 +15,7 @@ const packageAgentName = `${agentName}-0.5.4`
 export type EmmlyResponse = {
   data: any
   errors?: any
-  headers: any
+  headers: { [name: string]: boolean | null | number | string | string[] }
   status?: number
 }
 
@@ -102,6 +102,21 @@ export class EmmlyClient {
         this.setToken(process.env.EMMLY_API_TOKEN)
       }
     }
+  }
+
+  private createEmmlyResponse(axiosResponse: AxiosResponse<any, any>) {
+    const emmlyResponse: EmmlyResponse = {
+      data: axiosResponse.data,
+      headers: {},
+      status: axiosResponse.status,
+    }
+
+    // Iterate over Axios response headers and assign them to emmlyResponse.headers
+    Object.entries(axiosResponse.headers).forEach(([key, value]) => {
+      emmlyResponse.headers[key] = value
+    })
+
+    return emmlyResponse
   }
 
   /**
@@ -326,14 +341,8 @@ export class EmmlyClient {
 
       clearTimeout(timeoutTimer)
 
-      // Clean headers
-      // End response to user
-      const cleanResponse: EmmlyResponse = {
-        data: response.data,
-        errors: response.data.errors,
-        headers: response.headers,
-        status: response.status,
-      }
+      // Clean emmly response
+      const cleanResponse = this.createEmmlyResponse(response)
 
       if (response.status >= 400) {
         throw new EmmlyResponseError(cleanResponse)

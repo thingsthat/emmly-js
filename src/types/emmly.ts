@@ -6,7 +6,7 @@ import { JSONType } from './json'
 export interface IRepository {
   id?: string
   name: string
-  options: JSONType
+  options: any
   primaryLanguage: string
 }
 

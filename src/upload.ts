@@ -9,7 +9,6 @@ import { EmmlyClient } from '.'
 
 export type UploadEvent =
   | 'cancelled'
-  | 'chunkComplete'
   | 'chunkProgress'
   | 'complete'
   | 'error'
@@ -219,14 +218,14 @@ export class EmmlyUploader {
    * Put request to the axios instance. This is used by the chunk uploader to upload the chunk.
    *
    * @param {string} target - The target URL.
-   * @param {any} body - The body of the request.
+   * @param {Buffer} body - The body of the request.
    * @param {string} contentType - The content type of the request.
    * @param {CancelToken} cancelToken - The cancel token to use.
    * @param {(progressEvent: AxiosProgressEvent) => void} onUploadProgress - The progress callback.
    */
   async put(
     target: string,
-    body: any,
+    body: Buffer,
     contentType: string,
     cancelToken: CancelToken,
     onUploadProgress: (progressEvent: AxiosProgressEvent) => void,
