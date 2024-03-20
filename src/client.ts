@@ -10,7 +10,7 @@ import RepositoryResource from './resources/RepositoryResource'
 
 // We use this to set the user agent which in turn allows us to track usage of the SDK
 const agentName = 'emmly-js'
-const packageAgentName = `${agentName}-0.8.9`
+const packageAgentName = `${agentName}-0.9.0`
 
 interface DefaultResponseData {
   errors?: {
