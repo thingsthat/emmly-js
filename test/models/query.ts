@@ -17,7 +17,7 @@ export default (mockRepository: IRepository) => {
           assert.notExists(response.errors, 'Has errors')
 
           assert.exists(response.data, 'No models data')
-          assert.strictEqual(response.data.length, 9, 'Model length not 9')
+          assert.strictEqual(response.data.length, 10, 'Model length not 10')
 
           done()
         })

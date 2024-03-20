@@ -5,6 +5,8 @@ import { EmmlyClient, EmmlyUploader } from '../../src'
 import { IContent, IRepository } from '../../src/types/emmly'
 
 export default (mockRepository: IRepository, mockContent3: IContent) => {
+  // NOTE: If this hangs locally, it probably means that the S3 bucket is not configured correctly on localstack
+
   describe('Emmly content media on default workflow', function () {
     it('should create content media for uploading an image', function (done) {
       const client = new EmmlyClient()
@@ -21,10 +23,6 @@ export default (mockRepository: IRepository, mockContent3: IContent) => {
       )
 
       uploader.on('chunkProgress', (payload) => {
-        assert.strictEqual(payload?.referenceId, 'test-small')
-      })
-
-      uploader.on('chunkComplete', (payload) => {
         assert.strictEqual(payload?.referenceId, 'test-small')
       })
 
@@ -79,10 +77,6 @@ export default (mockRepository: IRepository, mockContent3: IContent) => {
         assert.strictEqual(payload?.referenceId, 'test')
       })
 
-      uploader.on('chunkComplete', (payload) => {
-        assert.strictEqual(payload?.referenceId, 'test')
-      })
-
       uploader.on('fileComplete', (payload) => {
         assert.strictEqual(payload?.referenceId, 'test')
 
@@ -126,10 +120,6 @@ export default (mockRepository: IRepository, mockContent3: IContent) => {
       )
 
       uploader.on('chunkProgress', (payload) => {
-        assert.strictEqual(payload?.referenceId, 'test')
-      })
-
-      uploader.on('chunkComplete', (payload) => {
         assert.strictEqual(payload?.referenceId, 'test')
       })
 

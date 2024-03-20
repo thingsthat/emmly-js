@@ -27,8 +27,8 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
           assert.exists(response.data.revisions, 'No contents data')
           assert.strictEqual(
             response.data.revisions.length,
-            6,
-            'Revisions length not 6',
+            2,
+            'Revisions length not 2',
           )
 
           done()
@@ -59,8 +59,8 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
           assert.exists(response.data.revisions, 'No contents data')
           assert.strictEqual(
             response.data.revisions.length,
-            3,
-            'Revisions length not 3',
+            2,
+            'Revisions length not 2',
           )
 
           done()

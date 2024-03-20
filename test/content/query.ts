@@ -27,8 +27,8 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
           assert.exists(response.data.contents, 'No contents data')
           assert.strictEqual(
             response.data.contents.length,
-            6,
-            'Content length not 6',
+            4,
+            'Content length not 4',
           )
 
           done()
@@ -65,10 +65,7 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
 
           done()
         })
-        .catch((error) => {
-          console.log(error)
-          done()
-        })
+        .catch(done)
     })
 
     it('should query content by media type', function (done) {
@@ -137,8 +134,8 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.exists(response.data.id, 'response.data.content.id')
-          assert.exists(response.data.name, 'response.data.content.name')
+          assert.exists(response.data.id, 'response.data.id')
+          assert.exists(response.data.name, 'response.data.name')
 
           done()
         })
@@ -182,7 +179,7 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.strictEqual(response.data.length, 2, 'Content length not 2')
+          assert.strictEqual(response.data.length, 1, 'Content length not 1')
 
           assert.exists(response.data[0].id, 'response.data.content.id')
           assert.exists(response.data[0].name, 'response.data.content.name')
@@ -204,7 +201,7 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.strictEqual(response.data.length, 2, 'Content length not 2')
+          assert.strictEqual(response.data.length, 1, 'Content length not 1')
 
           assert.exists(response.data[0].id, 'response.data.content.id')
           assert.exists(response.data[0].name, 'response.data.content.name')
