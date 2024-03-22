@@ -1,13 +1,14 @@
 import { assert } from 'chai'
 
 import { EmmlyClient } from '../../src'
-import { IContent, IRepository } from '../../src/types/emmly'
+import { ContentStatus } from '../../src/resources/ContentResource'
+import { IContent } from '../../src/types/emmly'
+import { mockContent, mockContent2, mockRepository } from '../mock'
 
-export default (mockRepository: IRepository, mockContent2: IContent) => {
+export default () => {
   describe('Emmly content default workflow', function () {
     it('should create default content', function (done) {
       const client = new EmmlyClient()
-
       client
         .query<{
           content: IContent
@@ -26,7 +27,7 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
                 }
             }`,
           {
-            content: mockContent2,
+            content: mockContent,
             repositorySlug: mockRepository.id,
           },
         )
@@ -38,14 +39,14 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
           assert.exists(response.data.content, 'response.data.content')
           assert.exists(response.data.content.id, 'response.data.content.id')
 
-          mockContent2.id = response.data.content.id
+          mockContent.id = response.data.content.id
 
           assert.exists(
             response.data.content.name,
             'response.data.content.name',
           )
 
-          assert.strictEqual(response.data.content.name, mockContent2.name)
+          assert.strictEqual(response.data.content.name, mockContent.name)
 
           assert.exists(
             response.data.content.revision,
@@ -87,9 +88,7 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
     it('should update default content', function (done) {
       const value = 'test update content'
 
-      // TODO: Ideally want to pass model interface here so we have field types in the data structure. JSON works for now.
-      // @ts-ignore
-      mockContent2.data.test = value
+      mockContent.data.test = value
 
       const client = new EmmlyClient()
 
@@ -111,7 +110,7 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
                 }
             }`,
           {
-            content: mockContent2,
+            content: mockContent,
           },
         )
         .then(function (response) {
@@ -126,7 +125,7 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
             'response.data.content.name',
           )
 
-          assert.strictEqual(response.data.content.name, mockContent2.name)
+          assert.strictEqual(response.data.content.name, mockContent.name)
 
           assert.exists(
             response.data.content.revision,
@@ -196,8 +195,8 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
             }`,
           {
             access: 'public',
-            contentId: mockContent2.id,
-            status: 'published',
+            contentId: mockContent.id,
+            status: ContentStatus.PUBLISHED,
           },
         )
         .then(function (response) {
@@ -214,7 +213,7 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
             'response.data.contentStatus.id',
           )
 
-          assert.strictEqual(response.data.contentStatus.id, mockContent2.id)
+          assert.strictEqual(response.data.contentStatus.id, mockContent.id)
 
           assert.exists(
             response.data.contentStatus.revision,
@@ -255,6 +254,30 @@ export default (mockRepository: IRepository, mockContent2: IContent) => {
           done()
         })
         .catch(done)
+    })
+
+    it('should push new content and publish', function (done) {
+      const client = new EmmlyClient()
+      client
+        .content(mockContent.id || '')
+        .repository(mockRepository.id || '')
+        .push(
+          mockContent2,
+          ['id', 'name', 'published'],
+          ContentStatus.PUBLISHED,
+        )
+        .then(function (response) {
+          assert.exists(response.data.id)
+          assert.strictEqual(response.data.name, mockContent2.name)
+          assert.strictEqual(response.data.published, true)
+
+          mockContent2.id = response.data.id
+
+          done()
+        })
+        .catch(function (error) {
+          done(error)
+        })
     })
   })
 }

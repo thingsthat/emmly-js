@@ -2,8 +2,9 @@ import { assert } from 'chai'
 
 import { EmmlyClient } from '../../src'
 import { IRepository } from '../../src/types/emmly'
+import { mockRepository } from '../mock'
 
-export default (mockRepository: IRepository) => {
+export default () => {
   describe('Emmly repositories options', function () {
     it('should update the repository display name', function (done) {
       const client = new EmmlyClient()
@@ -49,7 +50,9 @@ export default (mockRepository: IRepository) => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
 
     it('should update the repository option for the addon', function (done) {
@@ -78,7 +81,9 @@ export default (mockRepository: IRepository) => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
 
     it('should fail the repository option nooption as that does not exist', function (done) {

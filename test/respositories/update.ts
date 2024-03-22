@@ -2,8 +2,9 @@ import { assert } from 'chai'
 
 import { EmmlyClient } from '../../src'
 import { IRepository } from '../../src/types/emmly'
+import { mockRepository } from '../mock'
 
-export default (mockRepository: IRepository) => {
+export default () => {
   describe('Emmly repositories update', function () {
     it('should update the repository language', function (done) {
       const client = new EmmlyClient()
@@ -41,7 +42,9 @@ export default (mockRepository: IRepository) => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
   })
 }

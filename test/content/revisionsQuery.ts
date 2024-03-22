@@ -1,9 +1,10 @@
 import { assert } from 'chai'
 
 import { EmmlyClient } from '../../src'
-import { IContent, IRepository, IRevision } from '../../src/types/emmly'
+import { IRevision } from '../../src/types/emmly'
+import { mockContent, mockRepository } from '../mock'
 
-export default (mockRepository: IRepository, mockContent: IContent) => {
+export default () => {
   describe('Emmly revision queries', function () {
     it('should query all revisions for repository', function (done) {
       const client = new EmmlyClient()
@@ -29,13 +30,15 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
           assert.exists(response.data.revisions, 'No contents data')
           assert.strictEqual(
             response.data.revisions.length,
-            2,
-            'Revisions length not 2',
+            3,
+            'Revisions length not 3',
           )
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
 
     it('should query all revisions for content', function (done) {
@@ -69,7 +72,9 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
   })
 }

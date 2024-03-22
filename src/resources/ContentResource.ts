@@ -4,6 +4,13 @@ import { IContent } from '../types/emmly'
 
 import Resource, { SortDirection } from './Resource'
 
+export const ContentDefaultFields = ['id', 'name']
+
+export enum ContentStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+}
+
 /**
  * Content resource to query and filter content.
  */
@@ -57,7 +64,9 @@ export default class ContentResource extends Resource {
    * @param {string|string[]} fields - The fields to fetch.
    * @returns {Promise<EmmlyResponse<IContent[]>>} Returns the API EmmlyResponse.
    */
-  async fetch(fields: string | string[]): Promise<EmmlyResponse<IContent[]>> {
+  async fetch(
+    fields: string | string[] = ContentDefaultFields,
+  ): Promise<EmmlyResponse<IContent[]>> {
     if (this.variables.slug) {
       const response = await this.client.query<{
         content: IContent
@@ -135,24 +144,27 @@ export default class ContentResource extends Resource {
   /**
    * Pushes the content to Emmly.
    * @param {IContent} content - The content to push.
-   * @param {string|string[]} fields - The fields to fetch.
+   * @param {string|string[]} fields - The content fields to fetch from push.
+   * @param {string} status - The workflow status to push the content to, which enables publishing without a separate publish call.
    * @returns {Promise<EmmlyResponse<IContent>>} A promise that resolves to the EmmlyResponse.
    */
   async push(
     content: IContent,
-    fields: string | string[] = ['id', 'name'],
+    fields: string | string[] = ContentDefaultFields,
+    status?: string,
   ): Promise<EmmlyResponse<IContent>> {
     const response = await this.client.query<{
       content: IContent
     }>(
-      `mutation content($repositorySlug: String, $content: JSON!) { 
-        content(repositorySlug: $repositorySlug, content: $content) {
+      `mutation content($repositorySlug: String, $content: JSON!, $status: String) { 
+        content(repositorySlug: $repositorySlug, content: $content, status: $status) {
           ${Array.isArray(fields) ? fields.join(' ') : fields}
         }
       }`,
       {
         content,
         repositorySlug: this.variables.repositorySlug,
+        status,
       },
     )
 

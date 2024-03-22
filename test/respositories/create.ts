@@ -2,8 +2,9 @@ import { assert } from 'chai'
 
 import { EmmlyClient } from '../../src'
 import { IRepository } from '../../src/types/emmly'
+import { mockRepository } from '../mock'
 
-export default (mockRepository: IRepository) => {
+export default () => {
   describe('Emmly repositories', function () {
     it('should query no repositories via resource', function (done) {
       const client = new EmmlyClient()
@@ -17,7 +18,9 @@ export default (mockRepository: IRepository) => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
 
     it('should create an empty repository', function (done) {
@@ -63,7 +66,9 @@ export default (mockRepository: IRepository) => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
   })
 }

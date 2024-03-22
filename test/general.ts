@@ -14,7 +14,9 @@ export default () => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
   })
 }

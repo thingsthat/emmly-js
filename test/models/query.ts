@@ -1,9 +1,9 @@
 import { assert } from 'chai'
 
 import { EmmlyClient } from '../../src'
-import { IRepository } from '../../src/types/emmly'
+import { mockRepository } from '../mock'
 
-export default (mockRepository: IRepository) => {
+export default () => {
   describe('Emmly models', function () {
     it('should query models via resource', function (done) {
       const client = new EmmlyClient()
@@ -21,7 +21,9 @@ export default (mockRepository: IRepository) => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
   })
 }

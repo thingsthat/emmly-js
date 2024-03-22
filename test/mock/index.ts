@@ -32,3 +32,9 @@ export const getMockRevision = () => {
     id: null,
   }
 }
+
+export const mockRepository = getMockRepository()
+
+export const mockContent = getMockContent(mockRepository)
+export const mockContent2 = getMockContent(mockRepository)
+export const mockContent3 = getMockContent(mockRepository)

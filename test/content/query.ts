@@ -1,9 +1,10 @@
 import { assert } from 'chai'
 
 import { EmmlyClient } from '../../src'
-import { IContent, IRepository } from '../../src/types/emmly'
+import { IContent } from '../../src/types/emmly'
+import { mockContent, mockRepository } from '../mock'
 
-export default (mockRepository: IRepository, mockContent: IContent) => {
+export default () => {
   describe('Emmly content queries', function () {
     it('should query all content for repository', function (done) {
       const client = new EmmlyClient()
@@ -29,13 +30,15 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
           assert.exists(response.data.contents, 'No contents data')
           assert.strictEqual(
             response.data.contents.length,
-            4,
-            'Content length not 4',
+            5,
+            'Content length not 5',
           )
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
 
     it('should query content by id', function (done) {
@@ -69,7 +72,9 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
 
     it('should query content by media type', function (done) {
@@ -103,7 +108,9 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
 
     it('should query content by media type via resource', function (done) {
@@ -126,7 +133,9 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
 
     it('should query content by id', function (done) {
@@ -147,7 +156,9 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
 
     it('should query content by tag via resource', function (done) {
@@ -162,14 +173,16 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.strictEqual(response.data.length, 1, 'Content length not 1')
+          assert.strictEqual(response.data.length, 2, 'Content length not 2')
 
           assert.exists(response.data[0].id, 'response.data.content.id')
           assert.exists(response.data[0].name, 'response.data.content.name')
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
 
     it('should query content by tag array via resource', function (done) {
@@ -184,14 +197,16 @@ export default (mockRepository: IRepository, mockContent: IContent) => {
           assert.exists(response.data, 'Response has no data object')
           assert.notExists(response.errors, 'Has errors')
 
-          assert.strictEqual(response.data.length, 1, 'Content length not 1')
+          assert.strictEqual(response.data.length, 2, 'Content length not 2')
 
           assert.exists(response.data[0].id, 'response.data.content.id')
           assert.exists(response.data[0].name, 'response.data.content.name')
 
           done()
         })
-        .catch(done)
+        .catch(function (error) {
+          done(error)
+        })
     })
   })
 }

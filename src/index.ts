@@ -17,7 +17,7 @@ import { EmmlyResponse } from './response'
 
 // We use this to set the user agent which in turn allows us to track usage of the SDK
 const agentName = 'emmly-js'
-const packageAgentName = `${agentName}-0.9.2`
+const packageAgentName = `${agentName}-0.9.3`
 
 export type EmmlyOptions = {
   headers: { [name: string]: string }

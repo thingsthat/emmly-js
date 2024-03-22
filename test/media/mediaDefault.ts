@@ -2,9 +2,9 @@ import { assert } from 'chai'
 import fs from 'node:fs'
 
 import { EmmlyClient, EmmlyUploader } from '../../src'
-import { IContent, IRepository } from '../../src/types/emmly'
+import { mockContent3, mockRepository } from '../mock'
 
-export default (mockRepository: IRepository, mockContent3: IContent) => {
+export default () => {
   // NOTE: If this hangs locally, it probably means that the S3 bucket is not configured correctly on localstack
 
   describe('Emmly content media on default workflow', function () {
